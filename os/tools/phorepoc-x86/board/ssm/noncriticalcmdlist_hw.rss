@@ -90,7 +90,7 @@ RESOURCE SSM_COMMAND_LIST r_cmds
 	,r_cmd_phvolume
 	// prio 0x7E03 -- PHOREPOC Applications-grid pre-warm (src/phemenuwarm): draws the launcher once so its icons are rasterised before the first Menu press
 	,r_cmd_phemenuwarm
-	// prio 0x7E04 -- PHOREPOC developer ttys (src/phetty, docs/phorepoc/phetty-plan.md): the tty daemon; exits at once when CenRep e7015904/1 = 0 (PHETTY=off)
+	// prio 0x7E04 -- PHOREPOC developer ttys (src/phetty): the tty daemon; exits at once when CenRep e7015904/1 = 0 (PHETTY=off)
 	,r_cmd_phettyd
         };
     }

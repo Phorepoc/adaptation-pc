@@ -7,7 +7,7 @@ PDD with its fake sensor (`bsptemplate/asspandvariant/template_variant/camerasc/
 Symbian Foundation release.
 
 They are compiled **unmodified** into the x86 kernel (`tools/phorepoc-x86/ekern/make_ekern.sh`, entry points renamed on the command line only) and installed as built-in
-devices `Sys\Bin\ecamerasc.ldd` / `camerasc.pdd` (`xk_camerasc.cpp`). See `docs/phorepoc/camera-plan.md` (C1).
+devices `Sys\Bin\ecamerasc.ldd` / `camerasc.pdd` (`xk_camerasc.cpp`).
 
 | path | what |
 |---|---|
