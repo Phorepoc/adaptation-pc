@@ -1,0 +1,15 @@
+// variant.mmh -- the Phorepoc amd64 board's variant header, as seen by .mmp files (OURS).
+// A baseport exports this to /epoc32/include/<board>/ and board-specific mmps `#include` it (e.g.
+// the key map, keymap.mmp). emitter/build_mmp_x32.py puts this directory on the mmp preprocessor's
+// path. Only what an mmp reads is here; the kernel build does not use it.
+#include <platform_paths.hrh>
+
+#define PHOREPOC_X86
+macro __X86__
+#define MM_FLEXIBLE
+
+#define VariantTarget(name,ext)     name.##ext
+#define AsspNKernIncludePath        /epoc32/include
+#define VariantMediaDefIncludePath  /epoc32/include
+
+OS_LAYER_SYSTEMINCLUDE

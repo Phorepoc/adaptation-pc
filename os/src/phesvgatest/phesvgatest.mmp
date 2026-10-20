@@ -1,0 +1,15 @@
+// phesvgatest.mmp -- OURS (docs/phorepoc/vm-gpu-options.md S2): the first USER of the SVGA3D kernel driver (RVmwSvgaChannel): sets up the object
+// tables, a MOB, a guest-backed surface and a screen target through the channel, shows a CPU-filled image, then a DX context and a GPU clear
+// ("PH: svga" lines). Boot test: SSM_TEST=phesvgatest; x86 / VirtualBox with VBOX_3D=1 only.
+TARGET			phesvgatest.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE70157E8
+EPOCSTACKSIZE	0x10000
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE_SYMBIAN
+USERINCLUDE		../../tools/phorepoc-x86/ekern
+SOURCEPATH		.
+SOURCE			phesvgatest.cpp
+LIBRARY			euser.lib
