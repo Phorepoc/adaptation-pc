@@ -131,7 +131,7 @@ RESOURCE SSM_START_PROCESS_INFO r_cmd_connlogger
 
 // ---------------------------------------------------------------------------
 // r_cmd_widgetstartup -- PHOREPOC board (X4.79). This is the device maker's product list (the _hw list: the
-// 701's own starts widgetui.exe here). S^3's RD_WIDGET_PREINSTALLER pair: WidgetStartup runs
+// a product's own may start widgetui.exe here). S^3's RD_WIDGET_PREINSTALLER pair: WidgetStartup runs
 // WidgetPreInstaller, which installs z:\data\WidgetPreInstall\* once (a first-boot flag in 1028281F).
 // ---------------------------------------------------------------------------
 //

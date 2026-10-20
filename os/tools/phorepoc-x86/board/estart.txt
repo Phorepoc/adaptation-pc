@@ -4,7 +4,7 @@
 # ekern/xk_media.cpp); without a disk (DISK=0) it is the RAM drive, formatted at boot (FS_FORMAT_CORRUPT: unformatted media).
 C:  0  EFAT32  FAT   0       FS_FORMAT_CORRUPT,FS_NOT_RUGGED
 # (X4.111) the memory card: the ATA primary SLAVE (xk_ata.cpp, local drive 4) is a REMOVABLE drive (KDriveAttRemovable), F: as on
-# the 701 (E: = its internal mass memory, which this board does not have). Never auto-formatted. Absent without a second disk.
+# S60 phones (E: = internal mass memory, which this board does not have). Never auto-formatted. Absent without a second disk.
 F:  4  EFAT32  FAT   0       FS_NOT_RUGGED
 # (2026-10-16, synced from the PinePhone's estart.txt, commit 59396e9a) file-server caches on C: -- read + read-ahead + write-back
 # (1 s dirty-data flush) + the FAT32 LRU (512 KB), read by F32Properties (sf_file_cache.cpp, sfat32 fat_config.cpp). On the phone it
