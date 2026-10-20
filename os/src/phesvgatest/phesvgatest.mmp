@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // phesvgatest.mmp -- OURS (docs/phorepoc/vm-gpu-options.md S2): the first USER of the SVGA3D kernel driver (RVmwSvgaChannel): sets up the object
 // tables, a MOB, a guest-backed surface and a screen target through the channel, shows a CPU-filled image, then a DX context and a GPU clear
 // ("PH: svga" lines). Boot test: SSM_TEST=phesvgatest; x86 / VirtualBox with VBOX_3D=1 only.

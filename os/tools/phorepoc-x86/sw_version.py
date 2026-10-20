@@ -1,3 +1,6 @@
+# Copyright The Phorepoc Authors
+# SPDX-License-Identifier: EPL-1.0
+
 """sw_version.py -- OURS: write Z:\\resource\\versions\\sw.txt for a Phorepoc ROM (X4.59).
 
 SysUtil::GetSWVersion() reads this file (or sysutilsetup's property made from it). apparc keeps its

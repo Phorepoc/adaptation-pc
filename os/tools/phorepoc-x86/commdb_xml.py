@@ -1,3 +1,6 @@
+# Copyright The Phorepoc Authors
+# SPDX-License-Identifier: EPL-1.0
+
 """commdb_xml -- the Path C board's CommsDat configuration (X4.48), for the REAL CED (ced.exe).
 
     py tools/phorepoc-x86/commdb_xml.py <out.xml>
