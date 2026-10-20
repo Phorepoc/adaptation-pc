@@ -1,0 +1,2 @@
+board=pc
+arch=x32
