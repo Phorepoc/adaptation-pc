@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 
 // phesvgatest.cpp -- OURS (vm-gpu-options.md S2): drives the SVGA3D kernel driver through RVmwSvgaChannel. What vmwgfx's kernel and the Mesa svga winsys do, in
 // the smallest form that shows pixels on the host: object tables -> MOB -> guest-backed surface -> screen target -> (CPU image) -> DX context + COTables ->

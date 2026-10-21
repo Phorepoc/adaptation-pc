@@ -1,5 +1,5 @@
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+# SPDX-License-Identifier: Apache-2.0
 
 """commdb_xml -- the Path C board's CommsDat configuration (X4.48), for the REAL CED (ced.exe).
 

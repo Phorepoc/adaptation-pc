@@ -1,5 +1,5 @@
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+# SPDX-License-Identifier: Apache-2.0
 
 """sw_version.py -- OURS: write Z:\\resource\\versions\\sw.txt for a Phorepoc ROM (X4.59).
 
