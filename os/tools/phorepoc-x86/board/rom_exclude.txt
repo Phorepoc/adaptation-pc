@@ -1,0 +1,5 @@
+# Components the PC board leaves out of its ROM (pdk tools/x32_rom_args.py reads this; one registry key per line).
+# No WLAN hardware: the WLAN engine's server needs the board's wlanhwinit and dies without one (EUSRNIMP).
+wlmserverexe
+wlmserver
+wlmserversrv
