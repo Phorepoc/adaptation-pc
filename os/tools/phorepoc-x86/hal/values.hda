@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors; portions Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies)
-// SPDX-License-Identifier: EPL-1.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 // values.hda -- Phorepoc amd64/x32 board: the HAL attribute DEFAULTS.
 // Input to the REAL generator (halservices/hal/halcfg.pl), which turns it into the values table
 // hal.dll carries. Derived from the 2010 Qemu baseport's syborg/hal/values.hda -- the format,

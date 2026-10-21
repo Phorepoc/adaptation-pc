@@ -1,5 +1,5 @@
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: EPL-1.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 # release.yml -- the PC image: a bootable ISO and a VirtualBox appliance (.ova), built by the pdk's reusable workflow
 # from the commits board.lock pins. A tag v* publishes them as a draft release of this repository (review, then

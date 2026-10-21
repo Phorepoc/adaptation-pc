@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors; portions Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies)
-// SPDX-License-Identifier: EPL-1.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 // config.hcf -- Phorepoc amd64/x32 board: the HAL attribute -> HANDLER map.
 // Input to the REAL generator (halservices/hal/halcfg.pl -x), which turns it into the property
 // table hal.dll carries: 0 = "the static default from values.hda", a name = "call this function".
