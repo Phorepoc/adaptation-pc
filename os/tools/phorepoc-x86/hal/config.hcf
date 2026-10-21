@@ -1,0 +1,95 @@
+// Copyright The Phorepoc Authors; portions Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies)
+// SPDX-License-Identifier: EPL-1.0
+// config.hcf -- Phorepoc amd64/x32 board: the HAL attribute -> HANDLER map.
+// Input to the REAL generator (halservices/hal/halcfg.pl -x), which turns it into the property
+// table hal.dll carries: 0 = "the static default from values.hda", a name = "call this function".
+// Taken UNCHANGED from the 2010 Qemu baseport (syborg/hal/config.hcf) because every handler it
+// names lives in the generic halservices/hal/src/userhal.cpp -- GetRAMSize, GetFreeRAM,
+// GetSystemStartupReason, ProcessDisplayCurrentModeInfo and friends are board-independent, so
+// there is nothing here for an amd64 port to change yet. When this board grows a display or
+// power source of its own, this is the file that learns about it.
+
+EManufacturer=0
+EManufacturerHardwareRev=0
+EManufacturerSoftwareRev=0
+EManufacturerSoftwareBuild=0
+EModel=0
+EMachineUid=0
+EDeviceFamily=0
+EDeviceFamilyRev=0
+ECPU=0
+ECPUArch=0
+ECPUABI=0
+
+
+// NTT Docomo - Defect 1290 fix - E32test t_atomic.EXE failed with unhandled exception handling - start
+//
+// NTT DOCOMO, INC - Fix for bug 1290 "E32test t_atomic.EXE failed with unhandled exception handling"
+// Mark as not supported (comment-out), because it doesn't make sense on a non cycle-accurate simulator platform...
+// ECPUSpeed = GetCPUSpeed
+//
+// NTT Docomo - Defect 1290 fix - E32test t_atomic.EXE failed with unhandled exception handling - End
+
+ESystemStartupReason = GetSystemStartupReason
+ESystemException = GetSystemException
+ESystemTickPeriod=0
+EMemoryRAM = GetRAMSize
+EMemoryRAMFree = GetFreeRAM
+EMemoryROM = GetROMSize
+EMemoryPageSize=0
+EPowerGood=0
+EPowerBackup=0
+EPowerExternal=0
+EKeyboard=0
+EKeyboardDeviceKeys=0
+EKeyboardAppKeys=0
+EKeyboardClick=0
+EDisplayXPixels=ProcessDisplayCurrentModeInfo
+EDisplayYPixels=ProcessDisplayCurrentModeInfo
+EDisplayXTwips=ProcessDisplayCurrentModeInfo
+EDisplayYTwips=ProcessDisplayCurrentModeInfo
+EDisplayColors=ProcessDisplayColors
+EDisplayState : set = ProcessDisplayState
+EDisplayContrast : set = ProcessDisplayContrast
+EDisplayContrastMax=ProcessDisplayMaxContrast
+EBacklight=0
+EBacklightState :set = ProcessBacklightState
+EPen=0
+EPenX=0
+EPenY=0
+EPenDisplayOn : set = ProcessPenDisplayOnState
+EPenClick=0
+EMouse=0
+EMouseState : set = ProcessMouseState
+EMouseSpeed : set = ProcessMouseSpeed
+EMouseAcceleration : set = ProcessMouseAcceleration
+EMouseButtons=0
+EMouseButtonState = GetMouseButtonState
+ECaseSwitch=0
+ELEDs=0
+ELEDmask : set = ProcessLEDMask
+ESwitches=GetSwitches
+EIntegratedPhone=0
+EDisplayBrightness : set = ProcessDisplayBrightness
+EDisplayBrightnessMax=ProcessDisplayMaxBrightness
+ELanguageIndex : set = 0
+EDisplayIsMono=ProcessDisplaySpecifiedModeInfo
+EDisplayIsPalettized=ProcessDisplaySpecifiedModeInfo
+EDisplayBitsPerPixel=ProcessDisplaySpecifiedModeInfo
+EDisplayNumModes = ProcessDisplayNumModes
+EDisplayMemoryAddress=ProcessDisplayCurrentModeInfo
+EDisplayOffsetToFirstPixel=ProcessDisplaySpecifiedModeInfo
+EDisplayOffsetBetweenLines=ProcessDisplaySpecifiedModeInfo
+EDisplayPaletteEntry : set = ProcessDisplayPaletteEntry
+EDisplayIsPixelOrderRGB=ProcessDisplayCurrentModeInfo
+EDisplayIsPixelOrderLandscape=ProcessDisplayCurrentModeInfo
+EDisplayMode : set = ProcessDisplayMode
+EDebugPort : set = ProcessDebugPort
+EClipboardDrive=0
+ESystemDrive : set = 0
+EDisplayNumberOfScreens=0
+ENanoTickPeriod=0
+EFastCounterFrequency=ProcessFastCounterFrequency
+EFastCounterCountsUp=0
+EHardwareFloatingPoint = GetHardwareFloatingPoint
+

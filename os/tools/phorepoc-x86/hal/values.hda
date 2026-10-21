@@ -1,0 +1,54 @@
+// Copyright The Phorepoc Authors; portions Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies)
+// SPDX-License-Identifier: EPL-1.0
+// values.hda -- Phorepoc amd64/x32 board: the HAL attribute DEFAULTS.
+// Input to the REAL generator (halservices/hal/halcfg.pl), which turns it into the values table
+// hal.dll carries. Derived from the 2010 Qemu baseport's syborg/hal/values.hda -- the format,
+// the attribute set and every value that is not CPU- or board-specific are that file's.
+// Symbolic values are matched against the enums in halservices/hal/inc/hal_data.h with the
+// enum-name prefix stripped (arm -> ECPU_ARM, x86 -> ECPU_X86, ...).
+
+EManufacturer=ericsson
+EManufacturerHardwareRev=0x1
+EManufacturerSoftwareRev=0x100
+EManufacturerSoftwareBuild=0x250
+EModel=0x434f4850
+EMachineUid=0x10005152
+EDeviceFamily=crystal
+EDeviceFamilyRev=0x001
+
+// The three that actually describe this port. ECPUArch is the ARM-style architecture word on
+// ARM; on x86 nothing consumes it, so it carries the long-mode generation (6) rather than a
+// fabricated ARM-looking number.
+ECPU=x86
+ECPUArch=0x6
+ECPUABI=x86
+
+ESystemStartupReason=cold
+ESystemException=0
+// xboot.cpp programs the LAPIC timer for 1 ms system ticks and the nanokernel tick is the same
+// source, so both periods are microseconds of what the kernel really does, not board folklore.
+ESystemTickPeriod=1000
+ENanoTickPeriod=1000
+EMemoryRAM=4
+EMemoryRAMFree=2
+EMemoryROM=12
+EMemoryPageSize=0x1000
+EPowerGood=1
+EPowerExternal=1
+EMouse=0
+EMouseState=0
+EMouseSpeed=1
+EMouseAcceleration=1
+EMouseButtons=2
+EMouseButtonState=0
+EMouseX=640
+EMouseY=480
+ECaseSwitch=0
+EIntegratedPhone=0
+ELanguageIndex=0
+EDebugPort=0
+EClipboardDrive=2
+ESystemDrive=0xffff
+EDisplayNumberOfScreens=1
+EFastCounterFrequency=1000000
+EFastCounterCountsUp=1
