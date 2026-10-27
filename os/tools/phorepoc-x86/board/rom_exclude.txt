@@ -3,3 +3,10 @@
 wlmserverexe
 wlmserver
 wlmserversrv
+# ... and what links against it (a ROM without them fails: "imports wlmserver.dll which is not in the ROM bundle")
+wlanmgmtimpl
+wlancontrolimpl
+wlanpsmplugin
+wlanagt
+wlannif
+wlannwif
