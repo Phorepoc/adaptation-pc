@@ -22,7 +22,7 @@ to a draft release.
 ## What's in here
 
 ```
-os/tools/phorepoc-x86/board/          the board's settings: central repository, start-up, drives, installer
+os/board/                             the board's settings: central repository, start-up, drives, installer
 os/tools/phorepoc-x86/*.py            generators for the network settings and the software version
 os/src/phesvgatest/                   a test for the VMware/VirtualBox graphics driver
 os/third_party/symbian2010-camerasc/  the 2010 camera driver, built into the kernel
