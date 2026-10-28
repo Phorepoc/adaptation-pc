@@ -1,6 +1,6 @@
 # repository commit -- what the pc release is built from (pdk tools/board_lock.sh)
-pdk 863b7995f0dd654010c1d8019fe045831bcfd994
-core 6e0b8cd48dd03d79080aec7396c12062715fff54
+pdk 12dcac4d92bda028df7c57a284f62a0e1ea9a661
+core 7b2b0754bf3e126956c5125c2961dd49016ad9d9
 adaptation-x86-64 2b151745442e52fbdf0449afeef8e440a63f4f84
-adaptation-pc 7f3aeae6f4ca520e10d920f18e160deec450ca2b
+adaptation-pc 729529b9bca298de763a3ba4951f2f905c2c75f9
 tls da8893c483bb6770b1cc71eef8928c5351d8a02c
