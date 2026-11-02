@@ -2,13 +2,13 @@
 # Copyright The Phorepoc Authors
 # SPDX-License-Identifier: Apache-2.0
 
-# recipes/first-boot.sh -- regression test ("ph image recipe first-boot -b pc", in the container): the home screen on a freshly formatted C:, first and second boot.
-#   after "ph image rom -b pc" and "ph image recipe kernel -b pc"
+# recipes/first-boot.sh -- regression test ("phe image recipe first-boot -b pc", in the container): the home screen on a freshly formatted C:, first and second boot.
+#   after "phe image rom -b pc" and "phe image recipe kernel -b pc"
 # Formats a NEW blank disk (never a reused one: the first boots of a disk install the home-screen configuration and
 # create C:'s system data), boots the image twice from copies of it, and fails unless both boots show the home screen
 # with its widgets (first_boot.py). Out: $OUT = $PHOREPOC_BUILD/x86/regress/first-boot: bootN .log .ppm .png.
 set -eu
-HERE="$(cd "$(dirname "$0")/.." && pwd)"; cd "${PHOREPOC_PDK:?run it with ph image recipe first-boot -b pc}"
+HERE="$(cd "$(dirname "$0")/.." && pwd)"; cd "${PHOREPOC_PDK:?run it with phe image recipe first-boot -b pc}"
 B="${PHOREPOC_BUILD:-/build}"
 OUT="${OUT:-$B/x86/regress/first-boot}"
 ISO="${ISO:-$B/x86/ekern/phorepoc-ekern.iso}"

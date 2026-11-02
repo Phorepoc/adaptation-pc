@@ -25,7 +25,7 @@ so a changed source file fails loudly instead of silently producing a different 
 import os
 import sys
 
-# the Symbian source: PHOREPOC_SYMBIAN (ph sets it), else the in-tree baseline/ next to tools/
+# the Symbian source: PHOREPOC_SYMBIAN (phe sets it), else the in-tree baseline/ next to tools/
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SYMBIAN = os.environ.get("PHOREPOC_SYMBIAN") or os.path.join(REPO, "baseline")
 SRC = os.path.join(SYMBIAN, "symbian-2010", "oss.FCL.sf.incubator.stemkit", "commdb", "ethernetced.xml")

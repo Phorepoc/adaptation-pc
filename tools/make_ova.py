@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """make_ova -- package the x86-64 image as a VirtualBox appliance (.ova). Runs on Linux in the toolchain container
-(ph image recipe vbox -b pc); needs neither VirtualBox nor root: qemu-img for the disk, tar and an OVF 1.0 descriptor written here.
+(phe image recipe vbox -b pc); needs neither VirtualBox nor root: qemu-img for the disk, tar and an OVF 1.0 descriptor written here.
 
-The appliance is a PC with the kernel ISO (ph image recipe kernel) in its DVD drive and a blank, formatted C: disk:
+The appliance is a PC with the kernel ISO (phe image recipe kernel) in its DVD drive and a blank, formatted C: disk:
 
     IDE primary master    C: disk (FAT32, streamOptimized VMDK)   persistent: the phone's user data
     IDE secondary master  DVD drive with phorepoc-ekern.iso        GRUB, the kernel and the ROM
@@ -25,7 +25,7 @@ import tarfile
 import uuid
 from xml.sax.saxutils import escape
 
-PDK = os.environ.get("PHOREPOC_PDK") or sys.exit("make_ova.py: run it with ph image recipe vbox -b <board>")
+PDK = os.environ.get("PHOREPOC_PDK") or sys.exit("make_ova.py: run it with phe image recipe vbox -b <board>")
 sys.path.insert(0, os.path.join(PDK, "tools", "emitter"))
 from paths import BUILD, OS_ROOT, ADAPTATIONS  # noqa: E402
 
@@ -188,7 +188,7 @@ def main():
     x86 = os.path.join(BUILD, "x86")
     iso = os.path.join(x86, "ekern", "phorepoc-ekern.iso")
     if not os.path.isfile(iso):
-        sys.exit(f"no {iso} (ph image kernel first)")
+        sys.exit(f"no {iso} (phe image kernel first)")
     if not shutil.which("qemu-img"):
         sys.exit("qemu-img not found (the toolchain image needs qemu-utils)")
     mkdisk = os.path.join(OS_ROOT, "tools", "phorepoc-x86", "make_disk.sh")
