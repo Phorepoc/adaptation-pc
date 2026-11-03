@@ -15,6 +15,12 @@ COMPONENTS = {
 
 # core components that get this board's data (core registry: EXTEND)
 EXTEND = {
+    # OpenGL ES + EGL (mesa-symbian's software renderer): the window server here is not the NGA one, and core marks the GL
+    # stack `nga` because its surfaces are SurfaceManager surfaces the NGA compositor shows. symgl_window.cpp falls back
+    # without one -- the frame is copied into a bitmap and drawn into the window -- so on this board the stack ships in the
+    # ordinary ROM. (surfacemanager is only linked against: its kernel half is absent, RSurfaceManager::Open fails, and
+    # that is what selects the bitmap path.)
+    **{k: dict(nga=False) for k in ("surfacemanager", "phgl", "libegl", "libglesv2", "libglesv1_cm", "libgles_cm")},
     # the download app's device identity (board + architecture): it shows only what fits this board
     "pheget": dict(rom_data=[r"resource\phorepoc\device.txt=data/phorepoc/device_pc.txt"]),
 }
