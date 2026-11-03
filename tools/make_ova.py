@@ -67,12 +67,12 @@ def item(rtype, name, instance, desc=None, subtype=None, parent=None, address=No
 
 def vbox_machine(name, mem, cpus, disk_uuid, iso_uuid):
     """VirtualBox's own section (what its export writes): the settings OVF has no words for -- the phone-shaped video
-    modes, the VMSVGA display the kernel drives, AC'97, the boot order (DVD first), the UTC clock -- and the DVD drive
+    modes, the VBoxVGA display the kernel drives (its Bochs DISPI registers: VirtualBox follows a mode change on VBoxVGA, not on VMSVGA, which keeps the old size and shows the new one at the wrong pitch), AC'97, the boot order (DVD first), the UTC clock -- and the DVD drive
     holding the ISO. Other hypervisors ignore it (ovf:required="false")."""
     return f"""    <vbox:Machine ovf:required="false" version="1.19-windows" uuid="{{{uuid.uuid4()}}}" name="{escape(name)}" OSType="Other_64" snapshotFolder="Snapshots">
       <ovf:Info>Complete VirtualBox machine configuration in VirtualBox format</ovf:Info>
       <ExtraData>
-        <ExtraDataItem name="CustomVideoMode1" value="720x1280x32"/>
+        <ExtraDataItem name="CustomVideoMode1" value="640x360x32"/>
         <ExtraDataItem name="CustomVideoMode2" value="1280x720x32"/>
       </ExtraData>
       <Hardware>
@@ -83,7 +83,7 @@ def vbox_machine(name, mem, cpus, disk_uuid, iso_uuid):
           <Order position="3" device="None"/>
           <Order position="4" device="None"/>
         </Boot>
-        <Display controller="VMSVGA" VRAMSize="16"/>
+        <Display controller="VBoxVGA" VRAMSize="16"/>
         <Firmware/>
         <BIOS>
           <IOAPIC enabled="true"/>
