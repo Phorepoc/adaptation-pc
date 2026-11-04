@@ -26,7 +26,10 @@ EXTEND = {
     # without one -- the frame is copied into a bitmap and drawn into the window -- so on this board the stack ships in the
     # ordinary ROM. (surfacemanager is only linked against: its kernel half is absent, RSurfaceManager::Open fails, and
     # that is what selects the bitmap path.)
-    **{k: dict(nga=False) for k in ("surfacemanager", "phgl", "libegl", "libglesv2", "libglesv1_cm", "libgles_cm")},
+    **{k: dict(nga=False) for k in ("surfacemanager", "libegl", "libglesv2", "libglesv1_cm", "libgles_cm")},
+    # phgl also carries the channel to the VMware SVGA II / SVGA3D kernel driver (symvmw.h is core's seam): with it Mesa's svga driver draws on the host's
+    # GPU when the VM has 3D (VirtualBox --accelerate3d on, VMware); without 3D, or on QEMU, eglInitialize keeps the software renderer
+    "phgl": dict(nga=False, extra=["src/symgl/symvmw.cpp"], flags=["-iquote", os.path.join(OS_ROOT, "tools/phorepoc-x86/ekern")]),
     # Screen modes of this board: portrait 360x640 and a landscape 640x360 one rotated 90 degrees (os/board/wsini.txt). The window server
     # takes a mode's rotation only if the screen driver's draw device offers it (CFbsBitGc::OrientationsAvailable ->
     # CFbsDrawDevice::OrientationsAvailable, CScreen::LoadScreenSizeProperties: a rotation the device lacks is EWsPanicFailedToInitialise
