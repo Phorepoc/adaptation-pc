@@ -26,6 +26,8 @@ the home screen. When the commits ask for a release ([Conventional Commits](http
 os/board/                             the board's settings: central repository, start-up, drives, installer
 os/tools/phorepoc-x86/*.py            generators for the network settings and the software version
 os/src/phesvgatest/                   a test for the VMware/VirtualBox graphics driver
+os/src/phescdv/                       the screen driver's factory: draw devices that rotate in software and keep the display's row pitch
+os/src/phelandtest/                   a test: the landscape screen mode and a pattern that shows a wrong pitch or rotation
 os/third_party/symbian2010-camerasc/  the 2010 camera driver, built into the kernel
 registry/components_pc.py             the components this repository adds
 ```

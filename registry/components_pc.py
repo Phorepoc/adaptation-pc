@@ -6,11 +6,17 @@ PHOREPOC_ADAPTATIONS, see the pdk's tools/emitter/paths.py). Paths are relative 
 import os
 
 from paths import OS_ROOT  # noqa: F401
+from paths import resolve as _resolve_src  # ("baseline/..." -> the Symbian source)
+
+_SCDV = "oss.FCL.sf.os.graphics/graphicsdeviceinterface/screendriver"
 
 COMPONENTS = {
     # OURS (vm-gpu-options.md S2): the first user of the SVGA3D kernel driver (RVmwSvgaChannel): object tables / MOB / GB surface / screen target / DX context /
     # GPU clear on the VirtualBox VMSVGA device (VBOX_3D=1). SSM_TEST=phesvgatest (x86 only)
     "phesvgatest": dict(mmp=os.path.join(OS_ROOT, "src/phesvgatest/phesvgatest.mmp"), test=True),
+    # OURS: what an application that asks for landscape does to the window server, without Avkon -- the landscape screen mode and a test pattern.
+    # SSM_TEST=phelandtest
+    "phelandtest": dict(mmp=os.path.join(OS_ROOT, "src/phelandtest/phelandtest.mmp"), test=True),
 }
 
 # core components that get this board's data (core registry: EXTEND)
@@ -29,7 +35,15 @@ EXTEND = {
     # draw them in software (sbit BMDRAW*: the orientation is part of every pixel operation), over the same HAL framebuffer address,
     # pitch and size -- which is what the non-NGA window server of this board needs. Same sources, same Cdsb.cpp shim (its non-GCE
     # paths), the scdv.dll of the ROM.
-    "scdv": dict(mmp="oss.FCL.sf.os.graphics/graphicsdeviceinterface/screendriver/group/omapscdv.mmp"),
+    # The OMAP draw devices forget the display's row pitch (ConstructScreenL reads it from the HAL, then the base class's Construct sets
+    # width * 4 again), and this display pads its rows like the real phones (1472 bytes for 360 pixels): the whole screen came out sheared
+    # where the shadow screen is padded (VirtualBox). os/src/phescdv/scnew.cpp is the factory with the HAL's pitch put back; it replaces the
+    # OMAP scnew.cpp. (EXTEND lists are appended to core's, which keep the Cdsb.cpp shim and the generic driver's include directories:
+    # scnew.cpp includes the OMAP scdraw.h by its directory, "smomap/scdraw.h".)
+    "scdv": dict(mmp=_SCDV + "/group/omapscdv.mmp",
+                 drop=["scnew.cpp"],
+                 extra=["src/phescdv/scnew.cpp"],
+                 flags=["-iquote", _resolve_src(f"baseline/symbian-2010/{_SCDV}")]),
     # the download app's device identity (board + architecture): it shows only what fits this board
     "pheget": dict(rom_data=[r"resource\phorepoc\device.txt=data/phorepoc/device_pc.txt"]),
 }
