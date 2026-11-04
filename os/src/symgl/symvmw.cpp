@@ -63,6 +63,8 @@ void symvmw_info(symvmw_t* v, symvmw_info_t* o)
 	o->devcap_gl43 = v->iInfo.iDevCaps[4];
 	o->max_texture = v->iInfo.iDevCaps[5];
 	o->mob_max_kb = v->iInfo.iMobMaxKb;
+	o->display_w = v->iInfo.iDisplayW;
+	o->display_h = v->iInfo.iDisplayH;
 	// the guest memory a process may pin for the device: its pool's address space, but no more than half of the RAM that is free now
 	TMemoryInfoV1Buf mem;
 	TUint32 limit = v->iInfo.iPoolBytes;
@@ -107,6 +109,11 @@ int symvmw_mob_define(symvmw_t* v, uint32_t mobid, uint32_t offset, uint32_t siz
 int symvmw_mob_destroy(symvmw_t* v, uint32_t mobid)
 	{
 	return v->iCh.DestroyMob(mobid);
+	}
+
+int symvmw_scanout(symvmw_t* v, int op)
+	{
+	return v->iCh.Scanout(op);
 	}
 
 int symvmw_submit(symvmw_t* v, uint32_t offset, uint32_t length, uint32_t context, uint32_t flags, uint32_t dx_context,
