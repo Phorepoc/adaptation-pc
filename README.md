@@ -7,9 +7,29 @@ set up at boot, and a few PC-only components and tests.
 
 ## Try it
 
-Grab the `.ova` file from the [releases](https://github.com/Phorepoc/adaptation-pc/releases) and import it into
-VirtualBox with **File > Import Appliance**. There's also a bootable `.iso` if you'd rather use QEMU or real hardware.
-The first boot takes about a minute, and later ones are faster.
+Download the files from the [releases](https://github.com/Phorepoc/adaptation-pc/releases). The first boot takes about a
+minute, and later ones are faster.
+
+**VirtualBox.** Import the `.ova` with **File > Import Appliance**.
+
+**VMware Workstation Pro** (free for everyone since November 2024) or Workstation Player:
+
+1. Download `phorepoc-pc.iso` and `phorepoc-pc-vmware.zip` into one folder and unzip the zip there. It holds `Phorepoc.vmx`
+   and `phorepoc-disk.vmdk`, the drive C: that keeps your data between runs.
+2. In Workstation, **File > Open** `Phorepoc.vmx`, then **Power On**. Nothing needs changing: the machine has two CPUs, 1 GB of
+   RAM, an IDE disk and DVD drive, an Intel e1000 network adapter (NAT), Intel HD Audio, the VMware SVGA adapter with 3D
+   and an xHCI USB controller. The kernel's log goes to `serial.log` next to the `.vmx`.
+3. Workstation may show a notice about side-channel mitigations when Windows' hypervisor is on; it is only a notice.
+   Click OK.
+
+The `.ova` is for VirtualBox: VMware's importer rejects it (the appliance describes VirtualBox's AC'97 sound card, which
+VMware does not have). Use the `.vmx` zip instead. The pointer is absolute (VMware's mouse protocol), and the screen is a
+360x640 phone.
+
+A `.vmx` of your own needs the PCIe root ports (`pciBridge4` to `pciBridge7`) as in `Phorepoc.vmx`; with `usb_xhci` and
+without them VMware refuses to power on with "No PCIe slot available for usb_xhci".
+
+The bootable `.iso` also runs on QEMU and on real hardware.
 
 ## Building
 
@@ -24,6 +44,7 @@ the home screen. When the commits ask for a release ([Conventional Commits](http
 
 ```
 os/board/                             the board's settings: central repository, start-up, drives, installer
+recipes/                              the image recipes: kernel ISO, VirtualBox appliance (tools/make_ova.py), VMware machine (tools/make_vmware.py)
 os/tools/phorepoc-x86/*.py            generators for the network settings and the software version
 os/src/phesvgatest/                   a test for the VMware/VirtualBox graphics driver
 os/src/phescdv/                       the screen driver's factory: draw devices that rotate in software and keep the display's row pitch
