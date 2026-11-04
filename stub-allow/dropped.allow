@@ -1,0 +1,4 @@
+# The sources only this board's registry leaves out of a build (the pdk's tools/stub_audit.py check, kind 5; the reasons
+# are its tools/stub-allow/dropped-reasons.txt). Each line: reason component source
+# scdv: os/src/phescdv/scnew.cpp is the release's factory with the HAL's pitch put back (the padded VirtualBox shadow screen)
+D1 scdv scnew.cpp
