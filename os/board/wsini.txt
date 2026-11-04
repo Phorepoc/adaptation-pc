@@ -2,9 +2,16 @@
 #
 # Two modes, as the phone's S60 has them: 1 = portrait 360x640, the display's own orientation; 2 = landscape 640x360, rotated
 # 90 degrees. The screen driver of this board draws a rotated mode in software (registry/components_pc.py: the OMAP screen driver,
-# whose draw devices support all four orientations), so the display keeps its 360x640 framebuffer. The two Avkon hardware states
-# are what the orientation action plug-in switches between (akncapserver EKeyDeviceB = portrait, EKeyDeviceA = landscape).
-# Twips are left out: the window server takes them from the display's pixel density (the HAL), rotated mode included.
+# whose draw devices support all four orientations), so the display keeps its 360x640 framebuffer. Twips are left out: the window
+# server takes them from the display's pixel density (the HAL), rotated mode included.
+#
+# Hardware states (Avkon's layout config): the screen mode the display shows for an application that asks for no orientation, and
+# the alternate mode it shows for one that asks for the other orientation (CAknSgcClient::DoCalculateScreenMode). The phone's S60
+# has a portrait state (EKeyDeviceB, state 0) and a landscape state (EKeyDeviceA, state 1) that a sensor or a slide switches.
+# This board's keyboard is a PC keyboard that SysAp reports as an open slide, and an open slide with a hardware QWERTY puts
+# AknCapServer into the landscape state (CAknServKeyFilter::SlideStatusChangedL) -- on a PC that is no reason to turn the screen:
+# both states show portrait and offer landscape as the alternate. So the screen boots portrait, an application that asks for
+# landscape (SetOrientationL) gets mode 2 while it is on top, and the top application that asks for nothing brings portrait back.
 SCR_WIDTH1 360
 SCR_HEIGHT1 640
 SCR_ROTATION1 0
@@ -18,5 +25,5 @@ S60_HWSTATE_KEYCODE0 EKeyDeviceB
 S60_HWSTATE_SCREENMODE0 1
 S60_HWSTATE_ALT_SCREENMODE0 2
 S60_HWSTATE_KEYCODE1 EKeyDeviceA
-S60_HWSTATE_SCREENMODE1 2
-S60_HWSTATE_ALT_SCREENMODE1 1
+S60_HWSTATE_SCREENMODE1 1
+S60_HWSTATE_ALT_SCREENMODE1 2
