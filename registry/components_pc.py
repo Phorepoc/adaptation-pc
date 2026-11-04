@@ -17,6 +17,9 @@ COMPONENTS = {
     # OURS: what an application that asks for landscape does to the window server, without Avkon -- the landscape screen mode and a test pattern.
     # SSM_TEST=phelandtest
     "phelandtest": dict(mmp=os.path.join(OS_ROOT, "src/phelandtest/phelandtest.mmp"), test=True),
+    # OURS: the WLAN hardware-init plug-in of a board with no WLAN chip -- no data, no firmware, no MAC address (KErrNotFound),
+    # what a phone without the part answers; the 2010 adaptation stub invented an address <- wlmserversrv
+    "wlanhwinit": dict(mmp=os.path.join(OS_ROOT, "src/wlanhwinit/group/wlanhwinit.mmp")),
 }
 
 # core components that get this board's data (core registry: EXTEND)

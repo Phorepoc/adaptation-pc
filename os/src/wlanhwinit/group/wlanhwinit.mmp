@@ -1,0 +1,15 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: Apache-2.0
+
+// wlanhwinit.mmp -- OURS: the WLAN hardware-init DLL of a board with no WLAN chip. The same exports as the 2010 adaptation
+// stub (oss.FCL.sf.adapt.stubs/wlanhwinit_stub), which answers a made-up MAC address and so lets the WLAN engine go on as if
+// a chip were there; this one answers what a phone without the part answers (wlanhwinit.cpp).
+TARGET          wlanhwinit.dll
+TARGETTYPE      dll
+UID             0x1000008d 0x10207267
+CAPABILITY      CAP_GENERAL_DLL
+VENDORID        0
+SOURCEPATH      ../src
+SOURCE          wlanhwinit.cpp
+OS_LAYER_SYSTEMINCLUDE
+LIBRARY         euser.lib
