@@ -21,6 +21,15 @@ EXTEND = {
     # ordinary ROM. (surfacemanager is only linked against: its kernel half is absent, RSurfaceManager::Open fails, and
     # that is what selects the bitmap path.)
     **{k: dict(nga=False) for k in ("surfacemanager", "phgl", "libegl", "libglesv2", "libglesv1_cm", "libgles_cm")},
+    # Screen modes of this board: portrait 360x640 and a landscape 640x360 one rotated 90 degrees (os/board/wsini.txt). The window server
+    # takes a mode's rotation only if the screen driver's draw device offers it (CFbsBitGc::OrientationsAvailable ->
+    # CFbsDrawDevice::OrientationsAvailable, CScreen::LoadScreenSizeProperties: a rotation the device lacks is EWsPanicFailedToInitialise
+    # at boot). The generic driver's draw device is the base CDrawBitmap, normal orientation only, because it expects the display
+    # controller to rotate (the GCE/NGA compositor). The OMAP driver's draw devices (smomap/scdraw.h) offer all four orientations and
+    # draw them in software (sbit BMDRAW*: the orientation is part of every pixel operation), over the same HAL framebuffer address,
+    # pitch and size -- which is what the non-NGA window server of this board needs. Same sources, same Cdsb.cpp shim (its non-GCE
+    # paths), the scdv.dll of the ROM.
+    "scdv": dict(mmp="oss.FCL.sf.os.graphics/graphicsdeviceinterface/screendriver/group/omapscdv.mmp"),
     # the download app's device identity (board + architecture): it shows only what fits this board
     "pheget": dict(rom_data=[r"resource\phorepoc\device.txt=data/phorepoc/device_pc.txt"]),
 }
