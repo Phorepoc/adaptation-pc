@@ -50,6 +50,6 @@ EXTEND = {
                  drop=["scnew.cpp"],
                  extra=["src/phescdv/scnew.cpp"],
                  flags=["-iquote", _resolve_src(f"baseline/symbian-2010/{_SCDV}")]),
-    # the download app's device identity (board + architecture): it shows only what fits this board
-    "pheget": dict(rom_data=[r"resource\phorepoc\device.txt=data/phorepoc/device_pc.txt"]),
+    # the download app's device identity (board + architecture): it shows only what fits this board (the catalogue layer)
+    "catalogue_get": dict(rom_data=[r"resource\phorepoc\device.txt=data/phorepoc/device_pc.txt"]),
 }
