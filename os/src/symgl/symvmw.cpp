@@ -4,6 +4,7 @@
 // symvmw.cpp -- OURS (S3): symvmw.h (core's seam header) over the SVGA3D kernel driver's channel (RVmwSvgaChannel,
 // adaptation-x86-64: tools/phorepoc-x86/ekern). Part of phgl.dll on this board (the registry's EXTEND adds it to core's phgl):
 // Mesa's svga driver reaches the VirtualBox / VMware host GPU through it.
+#include <e32debug.h>
 #include <e32std.h>
 #include <e32hal.h>
 #include "symvmw.h"
@@ -21,17 +22,31 @@ symvmw_t* symvmw_open(void)
 	symvmw* v = new symvmw;
 	if (!v)
 		return NULL;
+	const char* step = "channel open";
 	TInt r = v->iCh.Open();
 	if (r == KErrNone)
+		{
+		step = "info";
 		r = v->iCh.GetInfo(v->iInfo);
+		}
 	if (r == KErrNone && (!v->iInfo.iDevCaps[0] || !v->iInfo.iDevCaps[1] || !(v->iInfo.iCaps & 0x8000000u)))
+		{
+		step = "caps (3D, DX contexts, guest-backed objects)";
 		r = KErrNotSupported;		// 3D off, no DX contexts, or no guest-backed objects: Mesa's svga driver cannot run
+		}
 	if (r == KErrNone)
+		{
+		step = "arena";
 		r = v->iCh.OpenArena(v->iArena);
+		}
 	if (r == KErrNone)
+		{
+		step = "pool";
 		r = v->iCh.OpenPool(v->iPool);
+		}
 	if (r != KErrNone)
 		{
+		RDebug::Printf("[symgl] symvmw_open: %s -> %d (the software renderer instead)", step, r);
 		v->iPool.Close();
 		v->iArena.Close();
 		v->iCh.Close();
