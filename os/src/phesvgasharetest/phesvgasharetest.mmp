@@ -1,0 +1,16 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: Apache-2.0
+//
+// phesvgasharetest.mmp -- the shared-surface table of the SVGA channel (hildon-port.md 7.43, C4 GPU sharing): export / import / owner close
+TARGET			phesvgasharetest.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE7016B42
+EPOCSTACKSIZE	0x10000
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE_SYMBIAN
+USERINCLUDE		../../../../adaptation-x86-64/os/tools/phorepoc-x86/ekern
+SOURCEPATH		.
+SOURCE			phesvgasharetest.cpp
+LIBRARY			euser.lib
