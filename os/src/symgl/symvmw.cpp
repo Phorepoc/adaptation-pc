@@ -68,6 +68,7 @@ void symvmw_close(symvmw_t* v)
 
 void symvmw_info(symvmw_t* v, symvmw_info_t* o)
 	{
+	v->iCh.GetInfo(v->iInfo);	// again: the display mode follows the screen mode (a resized PC display, hildon-port.md 7.39); the rest is fixed
 	Mem::FillZ(o, sizeof(*o));
 	o->caps = v->iInfo.iCaps;
 	o->cap2 = v->iInfo.iCap2;
