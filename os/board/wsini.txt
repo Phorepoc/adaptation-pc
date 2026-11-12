@@ -10,8 +10,11 @@
 # has a portrait state (EKeyDeviceB, state 0) and a landscape state (EKeyDeviceA, state 1) that a sensor or a slide switches.
 # This board's keyboard is a PC keyboard that SysAp reports as an open slide, and an open slide with a hardware QWERTY puts
 # AknCapServer into the landscape state (CAknServKeyFilter::SlideStatusChangedL) -- on a PC that is no reason to turn the screen:
-# both states show portrait and offer landscape as the alternate. So the screen boots portrait, an application that asks for
-# landscape (SetOrientationL) gets mode 2 while it is on top, and the top application that asks for nothing brings portrait back.
+# both states show the same mode. A PC monitor is wide, so that mode is LANDSCAPE (mode 2) with portrait as the alternate: the
+# screen boots landscape, an application that asks for portrait gets mode 1 while it is on top, and the Control Panel's "Screen
+# orientation" (core gsphorient: S60's preferred orientation) makes portrait the default. The display turns with the mode
+# (phescdv tells the kernel the draw device's orientation; xk_display.cpp turns the framebuffer), so the VM window is 640x360
+# in landscape and 360x640 in portrait, upright both ways.
 SCR_WIDTH1 360
 SCR_HEIGHT1 640
 SCR_ROTATION1 0
@@ -22,8 +25,8 @@ SCR_ROTATION2 90
 S60_SCR_SOFTKEY_LOCATION2 bottom
 S60_SCR_STYLE_NAME2 QHDTOUCH
 S60_HWSTATE_KEYCODE0 EKeyDeviceB
-S60_HWSTATE_SCREENMODE0 1
-S60_HWSTATE_ALT_SCREENMODE0 2
+S60_HWSTATE_SCREENMODE0 2
+S60_HWSTATE_ALT_SCREENMODE0 1
 S60_HWSTATE_KEYCODE1 EKeyDeviceA
-S60_HWSTATE_SCREENMODE1 1
-S60_HWSTATE_ALT_SCREENMODE1 2
+S60_HWSTATE_SCREENMODE1 2
+S60_HWSTATE_ALT_SCREENMODE1 1

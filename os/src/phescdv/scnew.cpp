@@ -19,16 +19,21 @@
 #include <bitdraw.h>
 #include "smomap/scdraw.h"
 #include <hal.h>
+#include <e32svr.h>
+#include <u32hal.h>
 #include "ScreenInfo.h"
 #include <graphics/gdi/gdiconsts.h>
 
 // A screen draw device whose stride is the HAL's row pitch.
+const TInt KPheDisplayHalRotate = 0x7103;		// EDisplayHalPhoreRotate (adaptation-x86-64 xk_display.cpp)
+
 template <class T>
 class TPhePitchedScreen : public T
 	{
 public:
 	virtual TInt ConstructScreenL(TInt aScreenNo, TAny* aBitmapAddress, TSize aSize)
 		{
+		iPheScreenNo = aScreenNo;
 		const TInt r = T::ConstructScreenL(aScreenNo, aBitmapAddress, aSize);
 		if (r != KErrNone)
 			return r;
@@ -44,6 +49,17 @@ public:
 		this->iLongWidth = pitch >> 2;
 		return KErrNone;
 		}
+	// a monitor or a VM window can turn where a phone panel cannot: the display is told the orientation WSERV draws in
+	// (adaptation-x86-64 xk_display.cpp, EDisplayHalPhoreRotate) and turns its own mode, so a rotated screen mode is shown
+	// upright in a window of its shape. A display that cannot turn answers KErrNotSupported: nothing changes.
+	virtual TBool SetOrientation(CFbsDrawDevice::TOrientation aOrientation)
+		{
+		const TBool ok = T::SetOrientation(aOrientation);
+		if (ok)
+			UserSvr::HalFunction(EHalGroupDisplay, KPheDisplayHalRotate, (TAny*)(TInt)aOrientation, NULL, iPheScreenNo);
+		return ok;
+		}
+	TInt iPheScreenNo;
 	};
 
 template <class T>
