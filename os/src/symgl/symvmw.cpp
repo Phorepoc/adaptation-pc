@@ -149,38 +149,3 @@ int symvmw_submit(symvmw_t* v, uint32_t offset, uint32_t length, uint32_t contex
 	*error_offset = s.iErrorOffset;
 	return r;
 	}
-
-int symvmw_surface_export(symvmw_t* v, uint32_t sid, uint32_t width, uint32_t height, uint32_t format, int* token)
-	{
-	TVmwShare s;
-	Mem::FillZ(&s, sizeof(s));
-	s.iSid = sid;
-	s.iWidth = width;
-	s.iHeight = height;
-	s.iFormat = format;
-	const TInt r = v->iCh.ExportSurface(s);
-	if (r == KErrNone)
-		*token = s.iToken;
-	return r;
-	}
-
-int symvmw_surface_import(symvmw_t* v, int token, uint32_t* sid, uint32_t* width, uint32_t* height, uint32_t* format)
-	{
-	TVmwShare s;
-	Mem::FillZ(&s, sizeof(s));
-	s.iToken = token;
-	const TInt r = v->iCh.ImportSurface(s);
-	if (r == KErrNone)
-		{
-		*sid = s.iSid;
-		*width = s.iWidth;
-		*height = s.iHeight;
-		*format = s.iFormat;
-		}
-	return r;
-	}
-
-int symvmw_surface_unexport(symvmw_t* v, int token)
-	{
-	return v->iCh.UnexportSurface(token);
-	}
