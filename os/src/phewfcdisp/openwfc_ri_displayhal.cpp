@@ -19,7 +19,7 @@
 const TUint32 KDefaultScreenNumber = 0;
 const TInt KHalPhoreRotate = 0x7103;			// xk_display.cpp EDisplayHalPhoreRotate: 0 normal, 1 rotated 90, 3 rotated 270
 // RDisplayChannel::TDisplayRotation bits (what libWFC's display policy expects in EScreenAttributeSupportedRotation)
-const TUint32 KRotNormal = 1, KRot90 = 2, KRot270 = 8;
+const TUint32 KRotAll = 0xF;					// all four: libWFC then composes unrotated and hands the rotation here (owfscreen.cpp)
 
 EXPORT_C COpenWFC_RI_Display* COpenWFC_RI_Display::NewL(TUint aScreen)
 	{
@@ -97,7 +97,7 @@ void COpenWFC_RI_DisplayHal::ConstructL()
 	iPitch = pitch;
 	iScreenInfo.iPixelFormat = EUidPixelFormatXRGB_8888;
 	iScreenInfo.iBytesPerPixel = 4;
-	iScreenInfo.iSupportedRotations = KRotNormal | KRot90 | KRot270;
+	iScreenInfo.iSupportedRotations = KRotAll;
 	iScreenInfo.iNormalWidth = w;
 	iScreenInfo.iNormalHeight = ht;
 	iScreenInfo.iNormalStride = w * 4;			// what the scene is composed at (the copy pads the rows)
@@ -148,8 +148,6 @@ TInt COpenWFC_RI_DisplayHal::SetAttribute(TInt aAttributeId, TAny* aAttribute, T
 	if (aAttributeId != EScreenAttributeCurrentRotation)
 		return KErrNotSupported;
 	const TScreenRotation r = static_cast<TScreenRotation>(*(TUint32*)aAttribute);
-	if (r == EScreenRotate180)
-		return KErrNotSupported;
 	iNewRotation = r;
 	return KErrNone;
 	}
@@ -199,7 +197,19 @@ TInt COpenWFC_RI_DisplayHal::UpdateDisplay()
 	const TInt wpl = iPitch / 4;
 	if (src)
 		{
-		if (!turned)
+		if (rot == EScreenRotate180)
+			{
+			// the display cannot turn upside down: the frame is written turned half way round
+			TUint32* d = (TUint32*)dst;
+			for (TInt y = 0; y < h; ++y)
+				{
+				const TUint32* s = (const TUint32*)((const TUint8*)src + y * srcStride);
+				TUint32* row = d + (iHeight - 1 - y) * wpl + iWidth - 1;
+				for (TInt x = 0; x < w; ++x)
+					*row-- = s[x];
+				}
+			}
+		else if (!turned)
 			{
 			for (TInt y = 0; y < h; ++y)
 				Mem::Copy(dst + y * iPitch, (const TUint8*)src + y * srcStride, w * 4);
