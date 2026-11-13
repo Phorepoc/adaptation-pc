@@ -2,3 +2,5 @@
 # are its tools/stub-allow/dropped-reasons.txt). Each line: reason component source
 # scdv: os/src/phescdv/scnew.cpp is the release's factory with the HAL's pitch put back (the padded VirtualBox shadow screen)
 D1 scdv scnew.cpp
+# openwfc_ri_display: src/phewfcdisp/openwfc_ri_displayhal.cpp drives the screen through the display HAL (no display channel driver on this board)
+D16 openwfc_ri_display openwfc_ri_displaychannel.cpp
