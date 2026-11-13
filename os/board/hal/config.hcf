@@ -93,3 +93,6 @@ EFastCounterFrequency=ProcessFastCounterFrequency
 EFastCounterCountsUp=0
 EHardwareFloatingPoint = GetHardwareFloatingPoint
 
+// EDisplayMemoryHandle: an RChunk handle over the screen (the display HAL, xk_display.cpp: a chunk over the shadow screen) -- the NGA
+// window server's screen surface and direct screen access, and the board's composition back end (os/src/phewfcdisp)
+EDisplayMemoryHandle=GetDisplayMemoryHandle

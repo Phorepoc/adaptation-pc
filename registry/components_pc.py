@@ -50,6 +50,11 @@ EXTEND = {
                  drop=["scnew.cpp"],
                  extra=["src/phescdv/scnew.cpp"],
                  flags=["-iquote", _resolve_src(f"baseline/symbian-2010/{_SCDV}")]),
+    # NGA images (NGA=1): libWFC's display back end. Core's talks to a display channel driver, which this board has not; ours copies each
+    # composed frame into the display HAL's screen memory (EDisplayMemoryHandle), which the kernel's flusher shows (os/src/phewfcdisp).
+    # Same DLL, UIDs and exports: only the source is replaced.
+    "openwfc_ri_display": dict(drop=["openwfc_ri_displaychannel.cpp"], extra=["src/phewfcdisp/openwfc_ri_displayhal.cpp"],
+                               flags=["-iquote", os.path.join(OS_ROOT, "src/phewfcdisp")]),
     # the download app's device identity (board + architecture): it shows only what fits this board (the catalogue layer)
     "catalogue_get": dict(rom_data=[r"resource\phorepoc\device.txt=data/phorepoc/device_pc.txt"]),
 }
