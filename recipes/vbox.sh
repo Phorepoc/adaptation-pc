@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 # recipes/vbox.sh -- package the kernel ISO as a VirtualBox appliance, <build>/x86/<name>.ova ("phe image recipe vbox
 # -b pc [make_ova.py options]": -n name, -m MB of RAM, -c CPUs, -d MB of the C: disk, -o file). Runs in the toolchain

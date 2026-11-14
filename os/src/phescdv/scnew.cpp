@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // scnew.cpp -- OURS: the screen driver's factory for this board (replaces the OMAP driver's smomap/scnew.cpp in the ROM's scdv.dll).
 //

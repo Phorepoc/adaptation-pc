@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 # recipes/first-boot.sh -- regression test ("phe image recipe first-boot -b pc", in the container): the home screen on a freshly formatted C:, first and second boot.
 #   after "phe image rom -b pc" and "phe image recipe kernel -b pc"

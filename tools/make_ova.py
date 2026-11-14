@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 """make_ova -- package the x86-64 image as a VirtualBox appliance (.ova). Runs on Linux in the toolchain container
 (phe image recipe vbox -b pc); needs neither VirtualBox nor root: qemu-img for the disk, tar and an OVF 1.0 descriptor written here.

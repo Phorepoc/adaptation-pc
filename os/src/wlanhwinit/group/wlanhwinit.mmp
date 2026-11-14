@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // wlanhwinit.mmp -- OURS: the WLAN hardware-init DLL of a board with no WLAN chip. The same exports as the 2010 adaptation
 // stub (oss.FCL.sf.adapt.stubs/wlanhwinit_stub), which answers a made-up MAC address and so lets the WLAN engine go on as if

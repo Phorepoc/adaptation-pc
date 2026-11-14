@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // phesvgasharetest.cpp -- self test of the SVGA channel's shared-surface table (xk_vmwsvga.cpp EVmwCtrlExportSurface / ImportSurface,
 // hildon-port.md 7.43): channel A exports one of its surface ids with a description, channel B imports it by token and gets the

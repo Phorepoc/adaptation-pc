@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 """first_boot.py -- regression test: the x86 image's home screen on a FRESHLY FORMATTED C:.
 
 Boots the image in QEMU twice from the same blank disk (first boot = the configuration install runs; second boot =

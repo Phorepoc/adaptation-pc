@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 """make_vmware -- package the x86-64 image as a VMware Workstation machine (a zip). Runs on Linux in the toolchain
 container (phe image recipe vmware -b pc); needs neither VMware nor root: qemu-img makes the disk, this file writes the .vmx.

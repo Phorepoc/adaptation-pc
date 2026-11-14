@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 # recipes/vmware.sh -- package a VMware Workstation machine for the kernel ISO, <build>/x86/<name>-vmware.zip ("phe image
 # recipe vmware -b pc [make_vmware.py options]": -n name, -m MB of RAM, -c CPUs, -d MB of the C: disk, -o file). Runs in

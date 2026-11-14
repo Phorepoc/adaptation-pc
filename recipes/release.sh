@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 # recipes/release.sh -- the PC release files into $OUT ("phe image release -b pc", run on the host after every component
 # is built): the bootable ISO, the VirtualBox appliance and the VMware machine (a zip with the .vmx and the C: disk).

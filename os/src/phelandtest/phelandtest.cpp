@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // phelandtest.cpp -- OURS: what an application that asks for landscape (SetOrientationL) makes the window server do, without Avkon: switch the
 // screen to its landscape mode and draw a test pattern with the window gc. The pattern has a mark at every corner (white top left, red top

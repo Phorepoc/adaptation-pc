@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // wlanhwinit.cpp -- the WLAN hardware-init plug-in of a board without WLAN hardware. The WLAN engine asks it for the chip's
 // initialisation and firmware data and for its MAC address before it starts the chip; with no chip there is no data, no

@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // openwfc_ri_displayhal.cpp -- the PC board's display back end for OpenWF-C (libWFC's COpenWFC_RI_Display), in place of
 // core's display-channel one (os/src/nga/openwfc_ri_display): this board has no display channel driver. Its display is the

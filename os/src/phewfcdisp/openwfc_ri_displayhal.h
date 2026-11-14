@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // openwfc_ri_displayhal.h -- the PC board's OpenWF-C display back end over the display HAL's screen memory (see the .cpp)
 #ifndef OPENWFC_RI_DISPLAYHAL_H

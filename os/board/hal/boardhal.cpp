@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // boardhal.cpp -- the Phorepoc amd64 board's own HAL attribute handler (the rest are the generic userhal.cpp ones).
 //
