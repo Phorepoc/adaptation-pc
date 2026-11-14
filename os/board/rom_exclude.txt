@@ -10,3 +10,7 @@ wlanpsmplugin
 wlanagt
 wlannif
 wlannwif
+# No accelerometer: the orientation channel comes from pheorientssy (the screen orientation choice), not from
+# orientationssy, which computes it from an accelerometer SSY (only one SSY may register the channel)
+orientationssy
+sensordatacompensator
