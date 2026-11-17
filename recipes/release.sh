@@ -18,7 +18,15 @@ if [ "${PHOREPOC_NATIVE:-0}" = 1 ]; then
   echo "native resolution: $view/wsini.txt -> $src"
 fi
 phe image skin -b pc                   # the default skin package (the UI needs one)
-phe image rom -b pc -O prune=1         # (drops what needs layers this board does not ship)
+# PHOREPOC_NGA=1: the NGA window server (composition through OpenWF-C, on the CPU: Mesa's software renderer, no GPU) instead of the classic one,
+# the first step of the window compositor (core phecomp). Not set (the default): the image is unchanged.
+# PHOREPOC_PHECOMP=1|2 (with NGA) adds core's phecomp render stage (1 = trace, 2 = compose).
+ROM_OPTS=(-O prune=1)       # (prune=1 drops what needs layers this board does not ship)
+if [ "${PHOREPOC_NGA:-0}" = 1 ]; then
+  ROM_OPTS+=(-O nga=1)
+  [ "${PHOREPOC_PHECOMP:-0}" = 0 ] || ROM_OPTS+=(-O "phecomp=${PHOREPOC_PHECOMP}")
+fi
+phe image rom -b pc "${ROM_OPTS[@]}"
 phe image recipe kernel -b pc
 phe image recipe vbox -b pc
 phe image recipe vmware -b pc
