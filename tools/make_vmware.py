@@ -104,7 +104,7 @@ def main():
         sys.exit("qemu-img not found (the toolchain image needs qemu-utils)")
     mkdisk = os.path.join(OS_ROOT, "tools", "phorepoc-x86", "make_disk.sh")
     if not os.path.isfile(mkdisk):
-        sys.exit(f"no {mkdisk} (board pc: adaptation-x86-64)")
+        sys.exit(f"no {mkdisk} (board pc: adaptation-x32)")
 
     work = os.path.join(x86, "vmware")
     shutil.rmtree(work, ignore_errors=True)

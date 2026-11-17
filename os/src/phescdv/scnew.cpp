@@ -25,7 +25,7 @@
 #include <graphics/gdi/gdiconsts.h>
 
 // A screen draw device whose stride is the HAL's row pitch.
-const TInt KPheDisplayHalRotate = 0x7103;		// EDisplayHalPhoreRotate (adaptation-x86-64 xk_display.cpp)
+const TInt KPheDisplayHalRotate = 0x7103;		// EDisplayHalPhoreRotate (adaptation-x32 xk_display.cpp)
 
 template <class T>
 class TPhePitchedScreen : public T
@@ -50,7 +50,7 @@ public:
 		return KErrNone;
 		}
 	// a monitor or a VM window can turn where a phone panel cannot: the display is told the orientation WSERV draws in
-	// (adaptation-x86-64 xk_display.cpp, EDisplayHalPhoreRotate) and turns its own mode, so a rotated screen mode is shown
+	// (adaptation-x32 xk_display.cpp, EDisplayHalPhoreRotate) and turns its own mode, so a rotated screen mode is shown
 	// upright in a window of its shape. A display that cannot turn answers KErrNotSupported: nothing changes.
 	virtual TBool SetOrientation(CFbsDrawDevice::TOrientation aOrientation)
 		{

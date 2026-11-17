@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // symvmw.cpp -- OURS (S3): symvmw.h (core's seam header) over the SVGA3D kernel driver's channel (RVmwSvgaChannel,
-// adaptation-x86-64: tools/phorepoc-x86/ekern). Part of phgl.dll on this board (the registry's EXTEND adds it to core's phgl):
+// adaptation-x32: tools/phorepoc-x86/ekern). Part of phgl.dll on this board (the registry's EXTEND adds it to core's phgl):
 // Mesa's svga driver reaches the VirtualBox / VMware host GPU through it.
 #include <e32debug.h>
 #include <e32std.h>

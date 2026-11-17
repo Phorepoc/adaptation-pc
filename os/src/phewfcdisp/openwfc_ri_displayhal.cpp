@@ -3,7 +3,7 @@
 
 // openwfc_ri_displayhal.cpp -- the PC board's display back end for OpenWF-C (libWFC's COpenWFC_RI_Display), in place of
 // core's display-channel one (os/src/nga/openwfc_ri_display): this board has no display channel driver. Its display is the
-// shadow screen of the kernel's display HAL (adaptation-x86-64 xk_display.cpp), which a flusher copies to the real framebuffer
+// shadow screen of the kernel's display HAL (adaptation-x32 xk_display.cpp), which a flusher copies to the real framebuffer
 // every 20 ms, diffing as it goes. So the back end only has to put each composed frame into that memory: it gets the screen as
 // an RChunk (HAL EDisplayMemoryHandle) and copies the scene there row by row, at the display's row pitch (rows are padded to
 // 64 bytes). A rotated screen mode (the landscape mode of this board, rotated 90) is written turned into the portrait shadow, and

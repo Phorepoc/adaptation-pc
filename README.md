@@ -1,7 +1,7 @@
 # adaptation-pc
 
 This repository makes Phorepoc OS run on PCs: QEMU, VirtualBox, VMware and real hardware. It sits on top of
-[adaptation-x86-64](https://github.com/Phorepoc/adaptation-x86-64), which does the kernel port, and adds everything
+[adaptation-x32](https://github.com/Phorepoc/adaptation-x32), which does the kernel port, and adds everything
 specific to a PC. That's the settings the system starts with, the list of what goes into the ROM, how the drives are
 set up at boot, and a few PC-only components and tests.
 
@@ -34,7 +34,7 @@ The bootable `.iso` also runs on QEMU and on real hardware.
 ## Building
 
 The [pdk](https://github.com/Phorepoc/pdk) README walks through a full PC build. With this repository and
-adaptation-x86-64 checked out next to core and the pdk, `-b pc` picks them up by itself.
+adaptation-x32 checked out next to core and the pdk, `-b pc` picks them up by itself.
 
 Every push to `main` builds the images on GitHub Actions, from the commits `board.lock` pins, and boots them in CI to
 the home screen. When the commits ask for a release ([Conventional Commits](https://www.conventionalcommits.org):
