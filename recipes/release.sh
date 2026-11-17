@@ -7,6 +7,16 @@
 set -eu
 : "${OUT:?run it with phe image release -b pc}" "${PHOREPOC_BUILD:?}"
 phe image zdata -b pc
+# PHOREPOC_NATIVE=1: the image shows the display at its native size (720x1440, no pixel doubling): the board's screen modes come from
+# os/board/wsini-native.txt (the merged OS tree links os/board/wsini.txt to it), and the kernel recipe (adaptation-x32) sets the
+# framebuffer. Not set (the default): the image is unchanged.
+if [ "${PHOREPOC_NATIVE:-0}" = 1 ]; then
+  src="$(cd "$(dirname "$0")/.." && pwd)/os/board/wsini-native.txt"
+  view="$(python3 "${PHOREPOC_PDK:?}/tools/emitter/paths.py")/board"
+  [ -f "$src" ] && [ -d "$view" ] || { echo "PHOREPOC_NATIVE=1: no $src or no merged board folder $view" >&2; exit 1; }
+  ln -sfn "$src" "$view/wsini.txt"
+  echo "native resolution: $view/wsini.txt -> $src"
+fi
 phe image skin -b pc                   # the default skin package (the UI needs one)
 phe image rom -b pc -O prune=1         # (drops what needs layers this board does not ship)
 phe image recipe kernel -b pc

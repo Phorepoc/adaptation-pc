@@ -1,0 +1,32 @@
+# The window server's screen modes of the PC board at the display's NATIVE size (PHOREPOC_NATIVE=1, recipes/release.sh; the
+# default image keeps os/board/wsini.txt). The kernel shows a 720x1440 screen 1:1 (no pixel doubling, adaptation-x32 kernel.sh).
+#
+# Mode 1 is the S60 compatibility mode: the 360x640 screen every S60 layout pack (nHD) exists for; Avkon picks the pack by that size and an
+# unmodified S60 application sees nothing else. SCR_XSCALE1/YSCALE1 2 is the scale the window server asks of the draw device. The stock
+# scaled draw device draws garbage in this build (native-resolution.md 4.1), so phescdv's draw device keeps drawing at scale 1 and passes the
+# scale to the display (xk_display.cpp), which shows the screen pixel-doubled and centred on the 720x1440 panel (the 160 spare rows are split
+# over top and bottom; SCR_TOP1 is 0, the display places it).
+# Mode 3 is the native mode: 0x0 = the whole physical screen, scale 1. An application that has its own layout for the panel
+# (the Etesian shell, native-resolution.md) selects it with SetAppScreenModeL; Avkon never picks it by itself.
+# Mode 2 (landscape) of the default board does not fit a 720-wide panel at the doubled size, so it is left out: the screen stays portrait.
+# The flicker buffer plug-in clips in physical coordinates against the scaled device (BitGdi panic EBitgdiPanicInvalidRegion), so the
+# plug-in list names the standard plug-in and the fader only (the board's lines come first in wsini.ini; the first PLUGINS line wins).
+PLUGINS STD EXTENDEDFADER
+SCR_WIDTH1 360
+SCR_HEIGHT1 640
+SCR_XSCALE1 2
+SCR_YSCALE1 2
+SCR_LEFT1 0
+SCR_TOP1 0
+SCR_ROTATION1 0
+S60_SCR_STYLE_NAME1 QHDTOUCH
+SCR_WIDTH3 0
+SCR_HEIGHT3 0
+SCR_ROTATION3 0
+S60_SCR_STYLE_NAME3 NATIVE
+S60_HWSTATE_KEYCODE0 EKeyDeviceB
+S60_HWSTATE_SCREENMODE0 1
+S60_HWSTATE_ALT_SCREENMODE0 1
+S60_HWSTATE_KEYCODE1 EKeyDeviceA
+S60_HWSTATE_SCREENMODE1 1
+S60_HWSTATE_ALT_SCREENMODE1 1

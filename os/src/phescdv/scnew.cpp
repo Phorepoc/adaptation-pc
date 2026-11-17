@@ -19,6 +19,8 @@
 #include <bitdraw.h>
 #include "smomap/scdraw.h"
 #include <hal.h>
+#include <bitdrawscaling.h>
+#include <bitdrawinterfaceid.h>
 #include <e32svr.h>
 #include <u32hal.h>
 #include "ScreenInfo.h"
@@ -26,6 +28,31 @@
 
 // A screen draw device whose stride is the HAL's row pitch.
 const TInt KPheDisplayHalRotate = 0x7103;		// EDisplayHalPhoreRotate (adaptation-x32 xk_display.cpp)
+
+// The stock scaled draw device (MScalingSettings, a window server screen mode with SCR_XSCALEn) draws garbage in this build
+// (native-resolution.md 4.1: fills magnified, text and bitmaps not replicated). This board's screen mode scale is therefore
+// the display's job: the draw device keeps drawing the logical screen at scale 1 (IsScalingOff: true), and the scale the window
+// server sets is passed to the display, which shows the logical screen pixel-doubled (adaptation-x32 xk_display.cpp,
+// EDisplayHalPhoreCompat). No scale set by the window server (the default board's wsini has none) = the display is never told.
+const TInt KPheDisplayHalCompat = 0x7104;
+class TPheScalingPassThrough : public MScalingSettings
+	{
+public:
+	TPheScalingPassThrough() : iX(1), iY(1), iScreenNo(0) {}
+	virtual TInt Set(TInt aFactorX, TInt aFactorY, TInt, TInt)
+		{
+		if (aFactorX < 1 || aFactorY < 1 || aFactorX != aFactorY)
+			return KErrArgument;
+		iX = aFactorX;
+		iY = aFactorY;
+		UserSvr::HalFunction(EHalGroupDisplay, KPheDisplayHalCompat, (TAny*)iX, NULL, iScreenNo);
+		return KErrNone;
+		}
+	virtual void Get(TInt& aFactorX, TInt& aFactorY, TInt& aDivisorX, TInt& aDivisorY)
+		{ aFactorX = iX; aFactorY = iY; aDivisorX = 1; aDivisorY = 1; }
+	virtual TBool IsScalingOff() { return ETrue; }
+	TInt iX, iY, iScreenNo;
+	};
 
 template <class T>
 class TPhePitchedScreen : public T
@@ -60,6 +87,17 @@ public:
 		return ok;
 		}
 	TInt iPheScreenNo;
+	virtual TInt GetInterface(TInt aInterfaceId, TAny*& aInterface)
+		{
+		if (aInterfaceId == KScalingSettingsInterfaceID)
+			{
+			iPheScaling.iScreenNo = iPheScreenNo;
+			aInterface = static_cast<MScalingSettings*>(&iPheScaling);
+			return KErrNone;
+			}
+		return T::GetInterface(aInterfaceId, aInterface);
+		}
+	TPheScalingPassThrough iPheScaling;
 	};
 
 template <class T>
