@@ -135,8 +135,10 @@ def boot(args, n, disk):
                 w, h, rgb = shot(mon, out, n)
                 wf, sf = analyse(w, h, rgb)
                 if wf >= 0.15 and sf >= 0.3:
-                    result.update(fg=time.time() - t0, widgets=wf, softkeys=sf, by="screen")
-                    return result, None
+                    # keep the boot running for --settle as on the marker path: the start-up list's later
+                    # commands (SSM's non-critical list, e.g. phvolume) print after the home screen shows
+                    result.update(by="screen")
+                    fg.append(time.time() - t0)
         if not fg:
             if p.poll() is None:
                 shot(mon, out, n)              # what the screen shows instead
