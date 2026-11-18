@@ -80,7 +80,7 @@ def write_png(path, w, h, rgb):
 
 
 def analyse(w, h, rgb):
-    """(widget_fraction, softkey_fraction). Regions are fractions of the screen, so the check does not depend
+    """(widget_fraction, softkey_fraction, status_pane_drawn). Regions are fractions of the screen, so the check does not depend
     on the 2x pixel doubling."""
     def px(x, y):
         i = (y * w + x) * 3
@@ -103,7 +103,19 @@ def analyse(w, h, rgb):
             m += 1
             if r < 140 and gg > 130 and gg > r + 30 and b > r + 30:
                 s += 1
-    return g / n, s / m
+    # status pane: its gradient, icons and title in the top band; a band that is all black means the pane is not drawn (yet)
+    lit = 0
+    for y in range(int(h * .01), int(h * .10), 2):
+        for x in range(int(w * .03), int(w * .97), 2):
+            r, gg, b = px(x, y)
+            if r + gg + b > 90:
+                lit += 1
+    return g / n, s / m, lit >= 4
+
+
+def ok(wf, sf, pane):
+    """the home screen is drawn: widget boxes, softkey bar and status pane"""
+    return wf >= 0.15 and sf >= 0.3 and pane
 
 
 def boot(args, n, disk):
@@ -137,8 +149,8 @@ def boot(args, n, disk):
             if time.time() - t0 >= next_poll and not fg:
                 next_poll += 15
                 w, h, rgb = shot(mon, out, n)
-                wf, sf = analyse(w, h, rgb)
-                if wf >= 0.15 and sf >= 0.3:
+                wf, sf, pane = analyse(w, h, rgb)
+                if ok(wf, sf, pane):
                     # keep the boot running for --settle as on the marker path: the start-up list's later
                     # commands (SSM's non-critical list, e.g. phvolume) print after the home screen shows
                     result.update(by="screen")
@@ -150,12 +162,20 @@ def boot(args, n, disk):
         result["fg"] = fg[0]
         while time.time() - t0 < fg[0] + args.settle:
             time.sleep(0.5)
-        w, h, rgb = shot(mon, out, n)
-        wf, sf = analyse(w, h, rgb)
-        result["widgets"], result["softkeys"] = wf, sf
-        if wf < 0.15 or sf < 0.3:
-            return result, ("screen has no home-screen widgets (widget boxes %.0f%%, softkey bar %.0f%%; see boot%d.png)"
-                            % (wf * 100, sf * 100, n))
+        # the verdict waits for the whole home screen -- widgets, softkey bar AND status pane -- on the marker path and on the
+        # screen path alike: the cap server's panes can be drawn later than the widgets on a slow boot (a boot that showed the
+        # widgets but a black status pane and softkey bar at the shot was seen once in 30). Up to --pane-wait more seconds.
+        deadline = time.time() + args.pane_wait
+        while True:
+            w, h, rgb = shot(mon, out, n)
+            wf, sf, pane = analyse(w, h, rgb)
+            result["widgets"], result["softkeys"], result["pane"] = wf, sf, pane
+            if ok(wf, sf, pane) or time.time() >= deadline or p.poll() is not None:
+                break
+            time.sleep(5)
+        if not ok(wf, sf, pane):
+            return result, ("screen has no home screen (widget boxes %.0f%%, softkey bar %.0f%%, status pane %s; see boot%d.png)"
+                            % (wf * 100, sf * 100, "drawn" if pane else "NOT drawn", n))
         return result, None
     finally:
         p.kill()
@@ -171,6 +191,7 @@ def main():
     ap.add_argument("--smp", type=int, default=2)
     ap.add_argument("--mem", type=int, default=1024)
     ap.add_argument("--settle", type=float, default=25, help="seconds from EAiFwForeground to the screendump")
+    ap.add_argument("--pane-wait", type=float, default=60, help="extra seconds after --settle for the status pane and the softkey bar to be drawn")
     ap.add_argument("--timeout", type=float, default=420, help="wall-clock seconds to wait for EAiFwForeground (QEMU without KVM is slow, more so when the host is busy)")
     ap.add_argument("--boots", type=int, default=2)
     args = ap.parse_args()
