@@ -1,0 +1,23 @@
+# The window server's screen modes of the PC board at the display's NATIVE size with the NGA window server (PHOREPOC_NATIVE=1 with
+# PHOREPOC_NGA=1; the default image keeps os/board/wsini.txt). The kernel shows a 720x1440 screen 1:1 (adaptation-x32 kernel.sh).
+#
+# Mode 1 is the native mode, the whole panel: the window server's mode for an application that has its own layout for it (a shell
+# written for the panel), selected with SetAppScreenModeL or SetScreenMode; Avkon never picks it by itself.
+# Mode 2 is the S60 compatibility mode: the 360x640 screen every S60 layout pack (nHD) exists for. Avkon picks the pack by that size and an
+# unmodified S60 application sees nothing else: both hardware states name it, and the window server's per-client screen modes (wsini
+# LEGACY_APPMODE 1, core R1) keep a client in it when the server's own mode is the native one. The NGA window server has no scaled draw device:
+# the render stage (core phecomp) draws such a group doubled and centred (core R2).
+SCR_WIDTH1 720
+SCR_HEIGHT1 1440
+SCR_ROTATION1 0
+S60_SCR_STYLE_NAME1 NATIVE
+SCR_WIDTH2 360
+SCR_HEIGHT2 640
+SCR_ROTATION2 0
+S60_SCR_STYLE_NAME2 QHDTOUCH
+S60_HWSTATE_KEYCODE0 EKeyDeviceB
+S60_HWSTATE_SCREENMODE0 2
+S60_HWSTATE_ALT_SCREENMODE0 2
+S60_HWSTATE_KEYCODE1 EKeyDeviceA
+S60_HWSTATE_SCREENMODE1 2
+S60_HWSTATE_ALT_SCREENMODE1 2

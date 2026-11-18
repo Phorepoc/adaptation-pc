@@ -12,6 +12,9 @@ phe image zdata -b pc
 # framebuffer. Not set (the default): the image is unchanged.
 if [ "${PHOREPOC_NATIVE:-0}" = 1 ]; then
   src="$(cd "$(dirname "$0")/.." && pwd)/os/board/wsini-native.txt"
+  [ "${PHOREPOC_NGA:-0}" = 1 ] && src="$(cd "$(dirname "$0")/.." && pwd)/os/board/wsini-nga-native.txt"
+  # the NGA image at the native size needs the S60 clients kept in the 360x640 mode (wsini LEGACY_APPMODE 1: the second mode) and drawn doubled by phecomp
+  if [ "${PHOREPOC_NGA:-0}" = 1 ]; then export LEGACY_APPMODE="${LEGACY_APPMODE:-1}"; PHOREPOC_PHECOMP="${PHOREPOC_PHECOMP:-2}"; fi
   view="$(python3 "${PHOREPOC_PDK:?}/tools/emitter/paths.py")/board"
   [ -f "$src" ] && [ -d "$view" ] || { echo "PHOREPOC_NATIVE=1: no $src or no merged board folder $view" >&2; exit 1; }
   ln -sfn "$src" "$view/wsini.txt"
