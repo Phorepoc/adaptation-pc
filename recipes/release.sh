@@ -29,7 +29,10 @@ if [ "${PHOREPOC_NGA:-0}" = 1 ]; then
   ROM_OPTS+=(-O nga=1)
   [ "${PHOREPOC_PHECOMP:-0}" = 0 ] || ROM_OPTS+=(-O "phecomp=${PHOREPOC_PHECOMP}")
 fi
-phe image rom -b pc "${ROM_OPTS[@]}"
+# PHOREPOC_BOOT=bootui: the ROM starts with bootui (which runs CED + cmsetup at boot: CommsDat is built from os/board/commdb_xml.py on the first boot, the
+# source of os/data/commsdat/cccccc00.cre), not the phone's System State Manager. Not set (the default): ssm, the image is unchanged.
+ROM_BOOT=(); [ -z "${PHOREPOC_BOOT:-}" ] || ROM_BOOT=(-s "$PHOREPOC_BOOT")
+phe image rom -b pc "${ROM_BOOT[@]}" "${ROM_OPTS[@]}"
 phe image recipe kernel -b pc
 phe image recipe vbox -b pc
 phe image recipe vmware -b pc
