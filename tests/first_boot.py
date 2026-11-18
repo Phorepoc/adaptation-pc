@@ -52,6 +52,10 @@ def shot(mon, out, n):
         except OSError:
             time.sleep(0.5)
     ppm = os.path.join(out, "boot%d.ppm" % n)
+    # a key press wakes the display: SysAp's lights timeout (~2 min after boot) makes the kernel show the framebuffer at a quarter
+    # of its brightness, and a late screendump would fail the widget check on a slow host
+    s.sendall(b"sendkey shift\n")
+    time.sleep(1)
     s.sendall(("screendump %s\n" % ppm).encode())
     for _ in range(20):
         time.sleep(0.5)
