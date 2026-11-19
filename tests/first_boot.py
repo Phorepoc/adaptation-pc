@@ -81,12 +81,18 @@ def write_png(path, w, h, rgb):
 
 def analyse(w, h, rgb):
     """(widget_fraction, softkey_fraction, status_pane_drawn). Regions are fractions of the screen, so the check does not depend
-    on the 2x pixel doubling."""
+    on the 2x pixel doubling. On a taller display (the native 720x1440 image, PHOREPOC_NATIVE=1) the S60 content is drawn doubled and
+    centred with a letterbox above and below, so the fractions are taken of that 16:9 content rectangle."""
+    cw, ch, oy = w, h, 0
+    if h * 9 > w * 16:
+        ch = w * 16 // 9
+        oy = (h - ch) // 2
+
     def px(x, y):
-        i = (y * w + x) * 3
+        i = ((oy + y) * w + x) * 3
         return rgb[i], rgb[i + 1], rgb[i + 2]
     # widget boxes: translucent dark grey-blue (about 140,150,160) on a wallpaper that is light everywhere
-    x0, x1, y0, y1 = int(w * .05), int(w * .95), int(h * .07), int(h * .21)
+    x0, x1, y0, y1 = int(cw * .05), int(cw * .95), int(ch * .07), int(ch * .21)
     n = g = 0
     for y in range(y0, y1, 4):
         for x in range(x0, x1, 4):
@@ -95,18 +101,18 @@ def analyse(w, h, rgb):
             if (r + gg + b) / 3 < 175 and abs(r - b) < 40:
                 g += 1
     # softkey bar: teal (about 99,158,156), the bottom ~8 %
-    y2, y3 = int(h * .91), int(h * .99)
+    y2, y3 = int(ch * .91), int(ch * .99)
     m = s = 0
     for y in range(y2, y3, 4):
-        for x in range(0, w, 4):
+        for x in range(0, cw, 4):
             r, gg, b = px(x, y)
             m += 1
             if r < 140 and gg > 130 and gg > r + 30 and b > r + 30:
                 s += 1
     # status pane: its gradient, icons and title in the top band; a band that is all black means the pane is not drawn (yet)
     lit = 0
-    for y in range(int(h * .01), int(h * .10), 2):
-        for x in range(int(w * .03), int(w * .97), 2):
+    for y in range(int(ch * .01), int(ch * .10), 2):
+        for x in range(int(cw * .03), int(cw * .97), 2):
             r, gg, b = px(x, y)
             if r + gg + b > 90:
                 lit += 1
