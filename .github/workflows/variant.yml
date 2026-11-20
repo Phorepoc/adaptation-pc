@@ -15,7 +15,7 @@ on:
         type: string
 
 concurrency:
-  group: variant
+  group: variant-phevbox
   cancel-in-progress: false
 
 jobs:
