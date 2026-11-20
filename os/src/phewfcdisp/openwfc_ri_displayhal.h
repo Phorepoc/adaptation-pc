@@ -30,6 +30,7 @@ private:
 	TScreenRotation iShownRotation;		// the orientation the display was last told
 	SymbianStreamType iCurrentSceneStream;
 	TUint32 iFrames;
+	TUint32 iCopyTicks, iCopyMax, iCopies, iSumTick;	// the frame copy into the screen: FastCounter ticks since the last summary (r35 timing)
 public:
 	static const TInt32 KImplementationVersion = 0x00000001;
 	};

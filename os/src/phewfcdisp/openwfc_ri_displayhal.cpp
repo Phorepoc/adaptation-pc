@@ -195,6 +195,7 @@ TInt COpenWFC_RI_DisplayHal::UpdateDisplay()
 	SymbianStreamGetBufferPointer(iCurrentSceneStream, front, &src);
 	TUint8* dst = iScreen.Base();
 	const TInt wpl = iPitch / 4;
+	const TUint32 t0 = User::FastCounter();
 	if (src)
 		{
 		if (rot == EScreenRotate180)
@@ -231,6 +232,24 @@ TInt COpenWFC_RI_DisplayHal::UpdateDisplay()
 			}
 		}
 	SymbianStreamReleaseReadBuffer(iCurrentSceneStream, front);
+	{
+	// one summary a second while frames come: how long the copy of the composed scene into the screen takes
+	const TUint32 dt = User::FastCounter() - t0;
+	iCopyTicks += dt;
+	if (dt > iCopyMax)
+		iCopyMax = dt;
+	++iCopies;
+	const TUint32 now = User::NTickCount();
+	if (now - iSumTick >= 1000)
+		{
+		TInt freq = 0;
+		HAL::Get(HAL::EFastCounterFrequency, freq);
+		const TUint32 perUs = freq >= 1000000 ? TUint32(freq / 1000000) : 1;
+		RDebug::Printf("PH: [wfchal] %u frames, copy %dx%d avg %u us max %u us", iCopies, w, h, iCopyTicks / perUs / iCopies, iCopyMax / perUs);
+		iCopyTicks = iCopyMax = iCopies = 0;
+		iSumTick = now;
+		}
+	}
 	if (rot != iShownRotation)
 		{
 		UserSvr::HalFunction(EHalGroupDisplay, KHalPhoreRotate, (TAny*)(rot == EScreenRotate90 ? 1 : rot == EScreenRotate270 ? 3 : 0), NULL);
