@@ -11,14 +11,10 @@ phe image zdata -b pc
 # os/board/wsini-native.txt (the merged OS tree links os/board/wsini.txt to it), and the kernel recipe (adaptation-x32) sets the
 # framebuffer. Not set (the default): the image is unchanged.
 if [ "${PHOREPOC_NATIVE:-0}" = 1 ]; then
-  src="$(cd "$(dirname "$0")/.." && pwd)/os/board/wsini-native.txt"
-  [ "${PHOREPOC_NGA:-0}" = 1 ] && src="$(cd "$(dirname "$0")/.." && pwd)/os/board/wsini-nga-native.txt"
   # the NGA image at the native size needs the S60 clients kept in the 360x640 mode (wsini LEGACY_APPMODE 1: the second mode) and drawn doubled by phecomp
   if [ "${PHOREPOC_NGA:-0}" = 1 ]; then export LEGACY_APPMODE="${LEGACY_APPMODE:-1}"; PHOREPOC_PHECOMP="${PHOREPOC_PHECOMP:-2}"; fi
-  view="$(python3 "${PHOREPOC_PDK:?}/tools/emitter/paths.py")/board"
-  [ -f "$src" ] && [ -d "$view" ] || { echo "PHOREPOC_NATIVE=1: no $src or no merged board folder $view" >&2; exit 1; }
-  ln -sfn "$src" "$view/wsini.txt"
-  echo "native resolution: $view/wsini.txt -> $src"
+  # the link is made in the container (recipes/native-wsini.sh): a host path does not resolve there
+  NGA="${PHOREPOC_NGA:-0}" phe image recipe native-wsini -b pc   # (NGA: the build container gets NGA, not PHOREPOC_NGA)
 fi
 phe image skin -b pc                   # the default skin package (the UI needs one)
 # PHOREPOC_NGA=1: the NGA window server (composition through OpenWF-C, on the CPU: Mesa's software renderer, no GPU) instead of the classic one,
