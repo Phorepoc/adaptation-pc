@@ -29,3 +29,11 @@ if [ "${UEFI_GATE:-1}" = 1 ] && [ -f /usr/share/OVMF/OVMF_CODE_4M.fd ]; then
 else
   echo "== UEFI + AHCI: skipped (no OVMF in the toolchain image)"
 fi
+# and a live boot with no disk at all: C: is the kernel's RAM drive (S60's CheckUserDrive refuses a RAM user drive; the
+# kernel reports it as a fixed-size disk). One boot: nothing survives it. NODISK_GATE=0 = off.
+if [ "${NODISK_GATE:-1}" = 1 ]; then
+  N="$OUT/no-disk"; mkdir -p "$N"
+  echo "== no disk (C: on the RAM drive)"
+  python3 "$HERE/tests/first_boot.py" --iso "$ISO" --disk "$N/none.img" --out "$N" --smp "${SMP:-2}" --mem "${MEM:-1024}" \
+       --settle "${SETTLE:-25}" --boots 1 --disk-bus none --firmware bios
+fi

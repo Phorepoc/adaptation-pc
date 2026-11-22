@@ -134,6 +134,8 @@ def boot(args, n, disk):
     if args.disk_bus == "ahci":
         # a SATA disk on an AHCI controller and no IDE master, as on real PCs (the kernel's AHCI back end)
         drive = ["-device", "ahci,id=ahci", "-drive", "id=c0,file=%s,format=raw,if=none" % disk, "-device", "ide-hd,drive=c0,bus=ahci.0"]
+    elif args.disk_bus == "none":
+        drive = []      # no disk: C: is the kernel's RAM drive (a live boot; nothing survives it)
     else:
         drive = ["-drive", "file=%s,format=raw,if=ide,index=0" % disk]
     fw = []
@@ -213,12 +215,13 @@ def main():
     ap.add_argument("--pane-wait", type=float, default=60, help="extra seconds after --settle for the status pane and the softkey bar to be drawn")
     ap.add_argument("--timeout", type=float, default=420, help="wall-clock seconds to wait for EAiFwForeground (QEMU without KVM is slow, more so when the host is busy)")
     ap.add_argument("--boots", type=int, default=2)
-    ap.add_argument("--disk-bus", choices=["ide", "ahci"], default="ide", help="the C: disk's controller")
+    ap.add_argument("--disk-bus", choices=["ide", "ahci", "none"], default="ide", help="the C: disk's controller (none = no disk, C: on the RAM drive)")
     ap.add_argument("--firmware", choices=["bios", "uefi"], default="bios", help="uefi = OVMF on q35 (needs the ovmf package)")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
     disk = os.path.join(args.out, "c-drive.img")
-    shutil.copyfile(args.disk, disk)
+    if args.disk_bus != "none":
+        shutil.copyfile(args.disk, disk)
     failed = 0
     for n in range(1, args.boots + 1):
         res, err = boot(args, n, disk)
