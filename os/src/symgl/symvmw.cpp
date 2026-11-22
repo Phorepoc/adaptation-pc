@@ -122,6 +122,11 @@ int symvmw_mob_define(symvmw_t* v, uint32_t mobid, uint32_t offset, uint32_t siz
 	return v->iCh.DefineMob(mobid, offset, size);
 	}
 
+int symvmw_mob_define_addr(symvmw_t* v, uint32_t mobid, const void* addr, uint32_t size)
+	{
+	return v->iCh.DefineMobAddress(mobid, addr, size);
+	}
+
 int symvmw_mob_destroy(symvmw_t* v, uint32_t mobid)
 	{
 	return v->iCh.DestroyMob(mobid);
