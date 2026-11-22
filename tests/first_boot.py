@@ -197,6 +197,19 @@ def boot(args, n, disk):
         if not ok(wf, sf, pane):
             return result, ("screen has no home screen (widget boxes %.0f%%, softkey bar %.0f%%, status pane %s; see boot%d.png)"
                             % (wf * 100, sf * 100, "drawn" if pane else "NOT drawn", n))
+        if args.power_off:
+            # the PC's power button (QEMU system_powerdown = VirtualBox "ACPI Shutdown"): the kernel holds the phone's power
+            # key, SysAp switches off through SSM's shutdown list, the board's ACPI S5 stops the VM (-no-reboot)
+            s = socket.socket(socket.AF_UNIX)
+            s.connect(mon)
+            s.sendall(b"system_powerdown\n")
+            t1 = time.time()
+            while p.poll() is None and time.time() - t1 < args.power_off:
+                time.sleep(0.5)
+            if p.poll() is None:
+                shot(mon, out, n)
+                return result, "still running %ds after the ACPI power button (see boot%d.png)" % (args.power_off, n)
+            result["off"] = time.time() - t1
         return result, None
     finally:
         p.kill()
@@ -216,6 +229,7 @@ def main():
     ap.add_argument("--timeout", type=float, default=420, help="wall-clock seconds to wait for EAiFwForeground (QEMU without KVM is slow, more so when the host is busy)")
     ap.add_argument("--boots", type=int, default=2)
     ap.add_argument("--disk-bus", choices=["ide", "ahci", "none"], default="ide", help="the C: disk's controller (none = no disk, C: on the RAM drive)")
+    ap.add_argument("--power-off", type=float, default=0, help="seconds: after the home screen, press the ACPI power button and fail unless the VM has stopped by then (0 = off)")
     ap.add_argument("--firmware", choices=["bios", "uefi"], default="bios", help="uefi = OVMF on q35 (needs the ovmf package)")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
@@ -232,6 +246,8 @@ def main():
         else:
             print("PASS %s: home screen at %.0fs, widget boxes %.0f%%, softkey bar %.0f%%" %
                   (what, res["fg"], res["widgets"] * 100, res["softkeys"] * 100))
+            if "off" in res:
+                print("PASS %s: switched off %.0fs after the ACPI power button" % (what, res["off"]))
     print("first_boot: %s" % ("FAIL" if failed else "PASS"))
     return 1 if failed else 0
 
