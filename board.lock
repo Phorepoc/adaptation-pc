@@ -1,13 +1,7 @@
 # repository commit -- what the pc release is built from (pdk tools/board_lock.sh)
-<<<<<<< HEAD
 pdk 35824d3955402c1fc27353a58c4846936007730b
 core 7b725a1eb175ab44a4aaa3b6582f9c8a0bdf0101
 adaptation-x32 591ea12b57c7acd435a715513ce6b791015eb815
-=======
-pdk f598c0b1e114b6e3ef67d6de025006f571660a87
-core 7b725a1eb175ab44a4aaa3b6582f9c8a0bdf0101
-adaptation-x32 f15af1dfb240d236b158d3d6fd39fe9301bf7dd5
->>>>>>> 16fe52d (perf(phewfcdisp): one timing line a second for the frame copy into the screen; pin core ab82899 (test))
 mesa-symbian f0566ebc623cfe022d84f8e41a3943124a9abd6a
 tls 247211ef51857f4bce16a57354bd5e98a996e1b5
 webengine 468d1d5f4ec057ea8b2f038b890f9a7761ec08f0
