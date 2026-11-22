@@ -1,0 +1,11 @@
+[Unit]
+Description=Phorepoc rig: boot the lab's new image once (grub-reboot)
+After=network-online.target phorepoc-collect.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/phorepoc-stage
+
+[Install]
+WantedBy=multi-user.target

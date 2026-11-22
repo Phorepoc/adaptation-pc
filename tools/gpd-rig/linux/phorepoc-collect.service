@@ -1,0 +1,11 @@
+[Unit]
+Description=Phorepoc rig: collect the last Phorepoc boot's disk log and report it to the lab
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/phorepoc-collect
+
+[Install]
+WantedBy=multi-user.target

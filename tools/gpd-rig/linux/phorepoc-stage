@@ -1,0 +1,39 @@
+#!/bin/sh
+# Copyright The Phorepoc Authors
+# SPDX-License-Identifier: BSD-2-Clause
+#
+# phorepoc-stage -- at every Linux boot on the GPD Win 2 rig (phorepoc-stage.service, after phorepoc-collect): fetch the
+# lab's image, http://$LAB/gpd/phorepoc.elf. If it is new (sha256 differs from the last one booted) or
+# /var/lib/phorepoc/rearm exists, put it on the ESP (\phorepoc\phorepoc.elf), make "Phorepoc x86_64 (disk)"
+# (/etc/grub.d/45_phorepoc) GRUB's entry for the NEXT boot only (grub-reboot) and reboot into it. Linux stays the default
+# entry, so whatever happens in Phorepoc, the boot after it is Linux again (the watchdog, a crash reset, or a power cycle).
+# Settings: /etc/default/phorepoc-rig (LAB=host:port, GUARD=1 = arm the chipset watchdog before the reboot, see below).
+set -u
+LAB=192.168.1.79:8737; GUARD=0
+[ -f /etc/default/phorepoc-rig ] && . /etc/default/phorepoc-rig
+S=/var/lib/phorepoc; mkdir -p "$S"
+ESP=$(findmnt -no TARGET /boot/efi 2>/dev/null || echo /boot/efi)
+T=$(mktemp)
+if ! curl -fsS --max-time 60 -o "$T" "http://$LAB/gpd/phorepoc.elf"; then
+  echo "phorepoc-stage: no image at http://$LAB/gpd/phorepoc.elf"; rm -f "$T"; exit 0
+fi
+new=$(sha256sum "$T" | cut -c1-64)
+old=$(cat "$S/booted.sha" 2>/dev/null || true)
+if [ "$new" = "$old" ] && [ ! -e "$S/rearm" ]; then
+  echo "phorepoc-stage: image $new booted already (touch $S/rearm to boot it again)"; rm -f "$T"; exit 0
+fi
+mkdir -p "$ESP/phorepoc"
+cp "$T" "$ESP/phorepoc/phorepoc.elf.new" && sync && mv "$ESP/phorepoc/phorepoc.elf.new" "$ESP/phorepoc/phorepoc.elf" && sync
+rm -f "$T" "$S/rearm"
+echo "$new" > "$S/booted.sha"
+date +%s > "$S/attempt"										# phorepoc-collect: a boot was tried
+grub-reboot "Phorepoc x86_64 (disk)" || { echo "phorepoc-stage: grub-reboot failed"; exit 1; }
+echo "phorepoc-stage: booting Phorepoc $new"
+# GUARD=1: the chipset's TCO watchdog (Linux iTCO_wdt) armed for 10 minutes and left running (no magic close), for a hang
+# BEFORE the kernel arms its own (GRUB, firmware). Only useful if this chipset keeps the TCO timer across the platform
+# reset -- verify on the device before turning it on (rig doc, section 10).
+if [ "$GUARD" = 1 ] && modprobe iTCO_wdt 2>/dev/null && [ -c /dev/watchdog ]; then
+  python3 -c 'import fcntl,struct,os; f=os.open("/dev/watchdog",os.O_WRONLY); fcntl.ioctl(f,0xC0045706,struct.pack("i",600)); os.write(f,b"k"); os._exit(0)' \
+    && echo "phorepoc-stage: TCO guard armed (600 s)"
+fi
+systemctl reboot

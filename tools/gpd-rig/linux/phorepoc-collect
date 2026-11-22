@@ -1,0 +1,129 @@
+#!/usr/bin/env python3
+# Copyright The Phorepoc Authors
+# SPDX-License-Identifier: BSD-2-Clause
+"""phorepoc-collect -- at every Linux boot on the GPD Win 2 rig (phorepoc-collect.service, before phorepoc-stage):
+read the last Phorepoc boot's log from the SSD's phorepoc-log partition (the kernel's DISKLOG=1, xk_disklog.cpp), keep it
+as /var/log/phorepoc/boot-<n>.log, classify how that boot ended and report it to the lab.
+
+  clean     the log ends in an orderly power-off / restart
+  fault     a kernel fault (the crash flush set the header's crashed flag, or a FAULT / CRASH line)
+  watchdog  the log just stops: the kernel hung (the TCO watchdog reset it) or the power button was held
+  no-log    phorepoc-stage started a Phorepoc boot but the partition holds no new boot: it died before the kernel's disk
+            log came up (GRUB, firmware, the bootstrap, early kernel)
+
+The report goes to the lab as UDP PHL1 log lines (the debug link's format, xk_netlog_proto.h) under its own boot id:
+"[rig] report ..." + the last 20 log lines + the fault line, so PhoneLab's gpd driver records it with its events and
+boots. Settings: /etc/default/phorepoc-rig (LAB=host:port)."""
+import glob, os, re, socket, struct, sys, time
+
+TYPE = "5048524c-4f47-4c4f-8750-484f5245504c"
+STATE = "/var/lib/phorepoc"
+LOGS = "/var/log/phorepoc"
+
+
+def conf():
+    c = {"LAB": "192.168.1.79:8737"}
+    try:
+        for l in open("/etc/default/phorepoc-rig"):
+            m = re.match(r"\s*(\w+)=\"?([^\"#]*)\"?", l)
+            if m:
+                c[m.group(1)] = m.group(2).strip()
+    except OSError:
+        pass
+    return c
+
+
+def partition():
+    for line in os.popen("lsblk -rno PATH,PARTTYPE 2>/dev/null"):
+        f = line.split()
+        if len(f) == 2 and f[1].lower() == TYPE:
+            return f[0]
+    return None
+
+
+def read_log(dev):
+    with open(dev, "rb") as f:
+        h = f.read(512)
+        if h[:8] != b"PHDLOG1\0":
+            return None
+        boot, n, sectors, flushes, crashed = struct.unpack_from("<IIIII", h, 8)
+        data = sectors * 512
+        if n > data:
+            n = data
+        body = f.read(n)
+        return {"boot": "%08x" % boot, "bytes": n, "flushes": flushes, "crashed": crashed, "text": body}
+
+
+def classify(log, attempted):
+    if log is None or log["boot"] == last_boot():
+        return ("no-log" if attempted else None), None
+    t = log["text"].decode("latin-1")
+    fault = None
+    for l in t.splitlines():
+        if re.search(r"FAULT:|^CRASH|FATAL|ExcFault", l) and fault is None:
+            fault = l.strip()
+    if log["crashed"] or fault:
+        return "fault", fault
+    tail = t[-4000:]
+    if re.search(r"\[power\] (switch off|restart)|\[netlog\] reboot requested", tail):
+        return "clean", None
+    return "watchdog", None
+
+
+def last_boot():
+    try:
+        return open(os.path.join(STATE, "collected.boot")).read().strip()
+    except OSError:
+        return None
+
+
+def send(lab_host, boot_hex, lines):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    rid = (int(boot_hex, 16) ^ 0xFFFFFFFF) if boot_hex else int(time.time()) & 0xFFFFFFFF
+    payload = ("\n".join(lines) + "\n").encode("utf-8", "replace")
+    seq = 0
+    for i in range(0, len(payload), 1400):
+        pkt = b"PHL1" + struct.pack("<II", rid, seq) + payload[i:i + 1400]
+        for dst in (lab_host, "255.255.255.255"):
+            try:
+                s.sendto(pkt, (dst, 6666))
+            except OSError:
+                pass
+        seq += 1
+        time.sleep(0.01)
+
+
+def main():
+    os.makedirs(STATE, exist_ok=True)
+    os.makedirs(LOGS, exist_ok=True)
+    c = conf()
+    attempted = os.path.exists(os.path.join(STATE, "attempt"))
+    dev = partition()
+    log = read_log(dev) if dev else None
+    kind, fault = classify(log, attempted)
+    if kind is None:
+        print("phorepoc-collect: no new Phorepoc boot")
+        return
+    n = len(glob.glob(os.path.join(LOGS, "boot-*.log"))) + 1
+    path = os.path.join(LOGS, "boot-%d.log" % n)
+    with open(path, "wb") as f:
+        f.write(log["text"] if log and kind != "no-log" else b"")
+    lines = []
+    if log and kind != "no-log":
+        lines = log["text"].decode("latin-1").splitlines()[-20:]
+        open(os.path.join(STATE, "collected.boot"), "w").write(log["boot"])
+    boot = log["boot"] if log and kind != "no-log" else ""
+    head = "[rig] report kind=%s boot=%s bytes=%d log=%s" % (kind, boot or "-", log["bytes"] if log and boot else 0, path)
+    report = [head] + (["[rig] fault " + fault] if fault else []) + ["[rig] | " + l for l in lines] + ["[rig] report end"]
+    open(path + ".report", "w").write("\n".join(report) + "\n")
+    try:
+        os.remove(os.path.join(STATE, "attempt"))
+    except OSError:
+        pass
+    send(c["LAB"].split(":")[0], boot, report)
+    print("\n".join(report[:3]))
+
+
+if __name__ == "__main__":
+    main()
