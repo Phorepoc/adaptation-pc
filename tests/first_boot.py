@@ -31,6 +31,7 @@ import time
 import zlib
 
 MARKER = b"aState: EAiFwForeground"
+OVMF = "/usr/share/OVMF"
 
 
 def read_ppm(path):
@@ -130,7 +131,19 @@ def boot(args, n, disk):
     mon = os.path.join(out, "mon%d.sock" % n)
     if os.path.exists(mon):
         os.unlink(mon)
-    cmd = ["qemu-system-x86_64", "-boot", "d", "-cdrom", args.iso, "-drive", "file=%s,format=raw,if=ide,index=0" % disk,
+    if args.disk_bus == "ahci":
+        # a SATA disk on an AHCI controller and no IDE master, as on real PCs (the kernel's AHCI back end)
+        drive = ["-device", "ahci,id=ahci", "-drive", "id=c0,file=%s,format=raw,if=none" % disk, "-device", "ide-hd,drive=c0,bus=ahci.0"]
+    else:
+        drive = ["-drive", "file=%s,format=raw,if=ide,index=0" % disk]
+    fw = []
+    if args.firmware == "uefi":
+        # OVMF on q35 (the ISO's x86_64-efi GRUB); a private copy of the variable store per boot
+        vars_ = os.path.join(out, "ovmf-vars%d.fd" % n)
+        shutil.copyfile(os.path.join(OVMF, "OVMF_VARS_4M.fd"), vars_)
+        fw = ["-machine", "q35", "-drive", "if=pflash,format=raw,readonly=on,file=%s" % os.path.join(OVMF, "OVMF_CODE_4M.fd"),
+              "-drive", "if=pflash,format=raw,file=%s" % vars_]
+    cmd = ["qemu-system-x86_64"] + fw + ["-boot", "d", "-cdrom", args.iso] + drive + [
            "-m", str(args.mem), "-smp", str(args.smp), "-display", "none", "-serial", "stdio", "-no-reboot",
            "-monitor", "unix:%s,server,nowait" % mon]
     t0 = time.time()
@@ -200,6 +213,8 @@ def main():
     ap.add_argument("--pane-wait", type=float, default=60, help="extra seconds after --settle for the status pane and the softkey bar to be drawn")
     ap.add_argument("--timeout", type=float, default=420, help="wall-clock seconds to wait for EAiFwForeground (QEMU without KVM is slow, more so when the host is busy)")
     ap.add_argument("--boots", type=int, default=2)
+    ap.add_argument("--disk-bus", choices=["ide", "ahci"], default="ide", help="the C: disk's controller")
+    ap.add_argument("--firmware", choices=["bios", "uefi"], default="bios", help="uefi = OVMF on q35 (needs the ovmf package)")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
     disk = os.path.join(args.out, "c-drive.img")
