@@ -151,12 +151,15 @@ def boot(args, n, disk):
     t0 = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     fg = []
+    dumped = []
 
     def reader():
         for line in p.stdout:
             log.write(b"%7.1f " % (time.time() - t0) + line)
             if MARKER in line and not fg:
                 fg.append(time.time() - t0)
+            if b"[dump] ===== end" in line:
+                dumped.append(time.time() - t0)
 
     threading.Thread(target=reader, daemon=True).start()
     result = {"fg": None}
@@ -179,6 +182,14 @@ def boot(args, n, disk):
         if not fg:
             if p.poll() is None:
                 shot(mon, out, n)              # what the screen shows instead
+                # and why: Scroll Lock makes the kernel dump every thread's wait state + user stack to the log
+                # (xk_threaddump.cpp; symbolize with romsym_x32.py --dump against the run's syms artifact)
+                s = socket.socket(socket.AF_UNIX)
+                s.connect(mon)
+                s.sendall(b"sendkey scroll_lock\n")
+                t1 = time.time()
+                while not dumped and time.time() - t1 < 60 and p.poll() is None:
+                    time.sleep(0.5)
             return result, "no home screen within %ds (no EAiFwForeground, no widgets on screen; see boot%d.png)" % (args.timeout, n)
         result["fg"] = fg[0]
         while time.time() - t0 < fg[0] + args.settle:
