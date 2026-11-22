@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
 # Embedded in ipxe.efi (build_ipxe.sh). The GPD Win 2 test rig: DHCP on the USB GbE adapter, then the lab's
-# per-boot script. Every failure path ends in "exit", so the firmware moves on to the next boot entry (Manjaro).
+# per-boot script. Every failure path ends in "exit", so the firmware moves on to the next boot entry (the installed Linux).
 set lab @LAB@
 # the lab's address as install-rig.sh wrote it next to ipxe.efi (overrides the built-in one; edit it on the ESP)
 chain --autofree file:/EFI/phorepoc-rig/lab.ipxe || echo rig: no lab.ipxe, using ${lab}

@@ -16,7 +16,7 @@ cp "$T/files/ipxe.efi" "$T/esp/EFI/BOOT/BOOTX64.EFI"
 # the built-in lab address is a dead one: the run passes only if lab.ipxe on the ESP (install-rig.sh's) takes over
 mkdir -p "$T/esp/EFI/phorepoc-rig"
 { echo '#!ipxe'; echo 'set lab 10.0.2.2:8737'; } > "$T/esp/EFI/phorepoc-rig/lab.ipxe"
-# FALLBACK=1: no lab at all -- iPXE must give up and hand back to the firmware (the Manjaro entry on the GPD)
+# FALLBACK=1: no lab at all -- iPXE must give up and hand back to the firmware (the installed Linux entry on the GPD)
 [ "${FALLBACK:-0}" = 1 ] && { rm "$T/esp/EFI/phorepoc-rig/lab.ipxe"; MARK="rig: giving up"; }
 ( cd "$T/srv" && exec python3 -m http.server 8737 --bind 0.0.0.0 ) > "$T/http.log" 2>&1 & HP=$!
 trap 'kill $HP 2>/dev/null || true' EXIT

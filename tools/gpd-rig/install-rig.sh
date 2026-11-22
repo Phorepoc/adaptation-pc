@@ -2,20 +2,20 @@
 # Copyright The Phorepoc Authors
 # SPDX-License-Identifier: BSD-2-Clause
 #
-# install-rig.sh -- run ONCE on the GPD Win 2, from its Manjaro, as root, in the folder that holds ipxe.efi (build_ipxe.sh's):
+# install-rig.sh -- run ONCE on the GPD Win 2, from its installed Linux (Ubuntu Server 24.04 next to the ESP; the unallocated rest of the SSD stays free for C:), as root, in the folder that holds ipxe.efi (build_ipxe.sh's):
 #
 #   sudo bash install-rig.sh 192.168.1.79:8737      the lab's address (host:port of PhoneLab's HTTP side)
-#   sudo bash install-rig.sh --undo                 remove the netboot entry, Manjaro first again
+#   sudo bash install-rig.sh --undo                 remove the netboot entry, the installed Linux first again
 #
 # It copies ipxe.efi to the internal SSD's EFI system partition (\EFI\phorepoc-rig\), writes the lab's address next to
 # it (lab.ipxe; edit it there if the lab moves), adds a UEFI boot entry "Phorepoc rig (iPXE)" and puts it FIRST, with
-# every existing entry (Manjaro's) after it. iPXE tries the lab 5 times (~30 s); without an answer it exits and the firmware
-# boots the next entry, Manjaro -- the fallback until the netboot works. Nothing else on the disk changes.
+# every existing entry (the installed Linux's) after it. iPXE tries the lab 5 times (~30 s); without an answer it exits and the firmware
+# boots the next entry, the installed Linux -- the fallback until the netboot works. Nothing else on the disk changes.
 set -eu
 DIR="$(cd "$(dirname "$0")" && pwd)"
 LABEL="Phorepoc rig (iPXE)"
 [ "$(id -u)" = 0 ] || { echo "run as root: sudo bash $0 $*"; exit 1; }
-command -v efibootmgr >/dev/null || pacman -S --noconfirm efibootmgr
+command -v efibootmgr >/dev/null || { echo "install efibootmgr first"; exit 1; }
 [ -d /sys/firmware/efi ] || { echo "not booted in UEFI mode"; exit 1; }
 
 ESP="$(findmnt -no TARGET /boot/efi 2>/dev/null || true)"
@@ -53,4 +53,4 @@ new="$(ours | head -1)"; [ -n "$new" ] || { echo "the new entry is not listed:";
 efibootmgr -q -o "$new${prev:+,$prev}"
 echo "boot entry $new first, then: $prev"
 efibootmgr -v | head -20
-echo "Done. Next boot: iPXE on the USB Ethernet adapter -> http://$LAB/gpd/boot.ipxe; no lab = Manjaro after ~30 s."
+echo "Done. Next boot: iPXE on the USB Ethernet adapter -> http://$LAB/gpd/boot.ipxe; no lab = the installed Linux after ~30 s."

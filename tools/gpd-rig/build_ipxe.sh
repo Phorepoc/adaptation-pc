@@ -32,7 +32,7 @@ H
 make -s -C "$W/ipxe/src" -j"$(nproc)" bin-x86_64-efi/ipxe.efi EMBED="$O/rig.ipxe" NO_WERROR=1
 cp "$W/ipxe/src/bin-x86_64-efi/ipxe.efi" "$O/ipxe.efi"
 git -C "$W/ipxe" rev-parse HEAD > "$O/ipxe.src-commit"
-[ "${NO_GRUB:-0}" = 1 ] && { ls -l "$O"; exit 0; }		# NO_GRUB=1: ipxe.efi only (setup-manjaro.sh)
+[ "${NO_GRUB:-0}" = 1 ] && { ls -l "$O"; exit 0; }		# NO_GRUB=1: ipxe.efi only (setup-linux.sh)
 sed "s/@LAB@/${GRUB_LAB:-$LAB}/" "$HERE/grub-net.cfg" > "$O/grub-net.cfg"
 grub-mkstandalone -O x86_64-efi -o "$O/grubx64.efi" --modules="efinet http net multiboot2 efi_gop efi_uga normal echo" \
   "boot/grub/grub.cfg=$O/grub-net.cfg"
