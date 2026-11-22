@@ -40,10 +40,20 @@ Every push to `main` builds the images on GitHub Actions, from the commits `boar
 the home screen. When the commits ask for a release ([Conventional Commits](https://www.conventionalcommits.org):
 `feat`, `fix` or a breaking change), the images are released under the next version.
 
+### Device profiles
+
+A profile is a set of build settings for one PC: `os/board/profiles/<name>.env`, one `KEY=VALUE` per line. A test image
+of a profile is a run of the `variant` workflow with those pairs on one line as `build_env`:
+
+| Profile | Settings |
+|---|---|
+| `gpd-win2` | the GPD Win 2 handheld: `PHOREPOC_NATIVE=1 SCREEN=720x1280 SCALE=1 USB_HOST=1` (the native 720x1280 panel, the USB keyboard and gamepad) |
+
 ## What's in here
 
 ```
 os/board/                             the board's settings: central repository, start-up, drives, installer
+os/board/profiles/                    build settings of particular PCs (device profiles)
 recipes/                              the image recipes: kernel ISO, VirtualBox appliance (tools/make_ova.py), VMware machine (tools/make_vmware.py)
 os/tools/phorepoc-x86/*.py            generators for the network settings and the software version
 os/src/phesvgatest/                   a test for the VMware/VirtualBox graphics driver
