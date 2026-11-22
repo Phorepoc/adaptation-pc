@@ -1,0 +1,22 @@
+#!ipxe
+# Copyright The Phorepoc Authors
+# SPDX-License-Identifier: BSD-2-Clause
+#
+# Embedded in ipxe.efi (build_ipxe.sh). The GPD Win 2 test rig: DHCP on the USB GbE adapter, then the lab's
+# per-boot script. Every failure path ends in "exit", so the firmware moves on to the next boot entry (Manjaro).
+set lab @LAB@
+# the lab's address as install-rig.sh wrote it next to ipxe.efi (overrides the built-in one; edit it on the ESP)
+chain --autofree file:/EFI/phorepoc-rig/lab.ipxe || echo rig: no lab.ipxe, using ${lab}
+set tries:int32 0
+:retry
+dhcp || goto fail
+chain --autofree http://${lab}/gpd/boot.ipxe?mac=${net0/mac}&try=${tries} || goto fail
+:fail
+inc tries
+iseq ${tries} 5 && goto out ||
+echo rig: no lab image yet (${tries}/5), retrying in 3 s
+sleep 3
+goto retry
+:out
+echo rig: giving up, back to the firmware boot menu
+exit 1

@@ -47,13 +47,14 @@ of a profile is a run of the `variant` workflow with those pairs on one line as 
 
 | Profile | Settings |
 |---|---|
-| `gpd-win2` | the GPD Win 2 handheld: `PHOREPOC_NATIVE=1 SCREEN=720x1280 SCALE=1 USB_HOST=1` (the native 720x1280 panel, the USB keyboard and gamepad) |
+| `gpd-win2` | the GPD Win 2 handheld: `PHOREPOC_NATIVE=1 SCREEN=720x1280 SCALE=1 USB_HOST=1 NETLOG=1 TCO=1` (the native 720x1280 panel, the USB keyboard and gamepad; the test rig's debug link and watchdog, `tools/gpd-rig`) |
 
 ## What's in here
 
 ```
 os/board/                             the board's settings: central repository, start-up, drives, installer
 os/board/profiles/                    build settings of particular PCs (device profiles)
+tools/gpd-rig/                        the GPD Win 2 test bench: iPXE netboot, its one-time installer, the debug link's lab tool
 recipes/                              the image recipes: kernel ISO, VirtualBox appliance (tools/make_ova.py), VMware machine (tools/make_vmware.py)
 os/tools/phorepoc-x86/*.py            generators for the network settings and the software version
 os/src/phesvgatest/                   a test for the VMware/VirtualBox graphics driver

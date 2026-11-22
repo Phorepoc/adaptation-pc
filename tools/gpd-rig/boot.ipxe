@@ -1,0 +1,8 @@
+#!ipxe
+# Copyright The Phorepoc Authors
+# SPDX-License-Identifier: BSD-2-Clause
+#
+# Served by the lab at /gpd/boot.ipxe. Boots the image the same way the UEFI ISO does: GRUB (x86_64-efi, built
+# by build_ipxe.sh with grub.cfg embedded) loads phorepoc.elf through multiboot2 over HTTP, on iPXE's own
+# network device (iPXE hands its SNP to the chained image, GRUB's efinet takes it).
+chain --autofree http://${lab}/gpd/grubx64.efi
