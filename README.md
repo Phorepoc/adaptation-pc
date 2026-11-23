@@ -68,7 +68,7 @@ At build time `os/` is laid over core's `os/`, so the paths line up with core's.
 
 ## License
 
-Code we wrote, and Symbian files we've changed, are EPL-2.0, with GPL-2.0-or-later as a Secondary License, and
-Symbian files we use unchanged stay EPL-1.0. The license texts are in `LICENSES/`.
+Phorepoc-authored files and modified Symbian files are EPL-2.0, with GPL-2.0-or-later as a Secondary License, and
+unmodified Symbian files remain EPL-1.0. The license texts are in `LICENSES/`.
 
 Contributions are welcome under the same terms. Add your name to `AUTHORS` in your first pull request.
