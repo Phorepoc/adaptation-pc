@@ -72,6 +72,7 @@ def classify(log, attempted):
 
 # the kernel's boot breadcrumbs (adaptation-x32 ekern/xk_stage.h): CMOS 0x70 = the last stage, 0x71 = its complement
 STAGES = {
+    0x07: "boot-kernel-tables",
     0x01: "boot-entry", 0x02: "boot-mem", 0x03: "boot-rom", 0x04: "boot-tables", 0x05: "boot-super", 0x06: "boot-jump",
     0x0E: "boot-die",
     0x10: "kern-entry", 0x11: "kern-ext", 0x12: "power", 0x13: "media", 0x14: "rig-log", 0x15: "display",
@@ -110,9 +111,20 @@ def boot_stage():
         cmos(CMOS + 2, 0)
     except OSError:
         crash = False
+    exc = ""
+    try:
+        if cmos(0x7E) == 0xA5:                  # the bootstrap's exception record (xboot.cpp XbFault)
+            b = [cmos(i) for i in range(0x73, 0x7E)]
+            rip = int.from_bytes(bytes(b[1:5]), "little")
+            cr2 = int.from_bytes(bytes(b[5:9]), "little")
+            err = b[9] | b[10] << 8
+            exc = ",exc=%d,rip=%08x,cr2=%08x,err=%04x" % (b[0], rip, cr2, err)
+            cmos(0x7E, 0)
+    except OSError:
+        pass
     if code == 0 or (code ^ check) != 0xFF:
-        return "none" + (",crash" if crash else "")
-    return "%s(0x%02x)%s" % (STAGES.get(code, "unknown"), code, ",crash" if crash else "")
+        return "none" + (",crash" if crash else "") + exc
+    return "%s(0x%02x)%s%s" % (STAGES.get(code, "unknown"), code, ",crash" if crash else "", exc)
 
 
 def last_boot():
