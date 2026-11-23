@@ -10,10 +10,11 @@
 #
 #   1. a 64 MB raw "phorepoc-log" partition in the SSD's free space (sgdisk; type 5048524c-4f47-4c4f-8750-484f5245504c),
 #      where the kernel (DISKLOG=1) leaves every boot's log -- also after a forced power-off; existing partitions untouched
-#   2. /etc/grub.d/45_phorepoc (the "Phorepoc x86_64 (disk)" entry: multiboot2 from the ESP), GRUB_DEFAULT=saved so
-#      grub-reboot works; Linux stays the default entry
+#   2. a 1 GB FAT partition "PHBOOT" holding the release ISO's own GRUB and grub.cfg, file for file (ISO=<file or URL>,
+#      default: the lab's /gpd/phorepoc.iso) -- the exact boot the VMs get -- and its UEFI entry "Phorepoc ISO boot",
+#      left out of BootOrder (phorepoc-stage boots it once with BootNext); Linux and its GRUB are not touched
 #   3. phorepoc-collect.service (the last Phorepoc boot's log -> /var/log/phorepoc/boot-<n>.log + a report to the lab) and
-#      phorepoc-stage.service (a new lab image -> the ESP -> grub-reboot -> reboot)
+#      phorepoc-stage.service (a new lab image -> PHBOOT:\boot\phorepoc.elf -> BootNext -> reboot)
 #   NETBOOT=1 also installs the iPXE entry (build_ipxe.sh + install-rig.sh).
 # Re-running is safe. Undo: sudo bash setup-linux.sh --undo (the partition stays; delete it with sgdisk if wanted).
 set -eu
@@ -23,18 +24,17 @@ W=/var/tmp/phorepoc-rig
 [ "$(id -u)" = 0 ] || { echo "run as root: sudo bash $0 $*"; exit 1; }
 if [ "${1:-}" = "--undo" ]; then
   systemctl disable --now phorepoc-stage.service phorepoc-collect.service 2>/dev/null || true
-  rm -f /etc/systemd/system/phorepoc-*.service /usr/local/sbin/phorepoc-stage /usr/local/sbin/phorepoc-collect /etc/grub.d/45_phorepoc
-  update-grub 2>/dev/null || grub-mkconfig -o /boot/grub/grub.cfg
-  echo "removed (the phorepoc-log partition and /var/log/phorepoc stay)"; exit 0
+  rm -f /etc/systemd/system/phorepoc-*.service /usr/local/sbin/phorepoc-stage /usr/local/sbin/phorepoc-collect
+  echo "removed (the PHBOOT + phorepoc-log partitions, their UEFI entry and /var/log/phorepoc stay)"; exit 0
 fi
 LAB="${1:?usage: sudo bash $0 <lab host:port> | --undo}"
 if command -v apt-get >/dev/null; then
-  pkgs="git gdisk curl python3 efibootmgr ca-certificates"
+  pkgs="git gdisk curl python3 efibootmgr dosfstools ca-certificates"
   [ "${NETBOOT:-0}" = 1 ] && pkgs="$pkgs build-essential liblzma-dev perl"
   DEBIAN_FRONTEND=noninteractive apt-get update -q
   DEBIAN_FRONTEND=noninteractive apt-get install -y -q $pkgs
 elif command -v pacman >/dev/null; then
-  pkgs="git gptfdisk curl python efibootmgr"
+  pkgs="git gptfdisk curl python efibootmgr dosfstools"
   [ "${NETBOOT:-0}" = 1 ] && pkgs="$pkgs base-devel xz perl"
   pacman -S --needed --noconfirm $pkgs
 else
@@ -60,15 +60,27 @@ else
 fi
 sgdisk -p "$DISK" | tail -n +8
 
-# 2. GRUB
-install -m 0755 "$G/linux/45_phorepoc" /etc/grub.d/45_phorepoc
-if grep -q '^GRUB_DEFAULT=' /etc/default/grub; then
-  grep -q '^GRUB_DEFAULT=saved' /etc/default/grub || sed -i 's/^GRUB_DEFAULT=.*/GRUB_DEFAULT=saved/' /etc/default/grub
-else
-  echo 'GRUB_DEFAULT=saved' >> /etc/default/grub
+# 2. PHBOOT: the ISO's boot files on their own FAT partition + a UEFI entry for it (not in BootOrder)
+if ! blkid -L PHBOOT >/dev/null 2>&1; then
+  sgdisk -n "0:0:+1G" -t "0:0700" -c "0:PHBOOT" "$DISK"
+  partprobe "$DISK" 2>/dev/null || partx -u "$DISK" 2>/dev/null || true
+  sleep 2
+  P=$(lsblk -rno PATH,PARTLABEL "$DISK" | awk '$2 == "PHBOOT" { print $1 }')
+  mkfs.vfat -F 32 -n PHBOOT "$P"
 fi
-update-grub 2>/dev/null || grub-mkconfig -o /boot/grub/grub.cfg
-grub-set-default 0
+P=$(blkid -L PHBOOT)
+ISO="${ISO:-http://$LAB/gpd/phorepoc.iso}"
+case "$ISO" in http*) curl -fsS -o "$W/phorepoc.iso" "$ISO"; ISO="$W/phorepoc.iso" ;; esac
+MI=$(mktemp -d); MP=$(mktemp -d)
+mount -o loop,ro "$ISO" "$MI"; mount "$P" "$MP"
+cp -r "$MI/." "$MP/"; sync
+umount "$MI" "$MP"; rmdir "$MI" "$MP"
+if ! efibootmgr | grep -q "Phorepoc ISO boot"; then
+  order=$(efibootmgr | sed -n 's/^BootOrder: //p')
+  efibootmgr -q -c -d "$DISK" -p "$(cat /sys/class/block/$(basename "$P")/partition)" -L "Phorepoc ISO boot" -l '\EFI\BOOT\BOOTX64.EFI'
+  efibootmgr -q -o "$order"
+fi
+efibootmgr | grep -E "BootOrder|Phorepoc"
 
 # 3. the services
 install -m 0755 "$G/linux/phorepoc-stage" /usr/local/sbin/phorepoc-stage

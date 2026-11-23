@@ -70,6 +70,51 @@ def classify(log, attempted):
     return "watchdog", None
 
 
+# the kernel's boot breadcrumbs (adaptation-x32 ekern/xk_stage.h): CMOS 0x70 = the last stage, 0x71 = its complement
+STAGES = {
+    0x01: "boot-entry", 0x02: "boot-mem", 0x03: "boot-rom", 0x04: "boot-tables", 0x05: "boot-super", 0x06: "boot-jump",
+    0x0E: "boot-die",
+    0x10: "kern-entry", 0x11: "kern-ext", 0x12: "power", 0x13: "media", 0x14: "rig-log", 0x15: "display",
+    0x16: "keyboard", 0x17: "touch", 0x18: "network", 0x19: "usb-host", 0x1A: "sound", 0x1B: "graphics",
+    0x1C: "ext-done",
+    0x20: "disp-mapped", 0x21: "disp-measured", 0x22: "disp-shadow", 0x23: "disp-hal",
+    0x30: "ahci-disk", 0x31: "disklog", 0x32: "netlog", 0x33: "usb-up",
+    0x40: "ui-frame", 0xEE: "crash",
+}
+CMOS = 0x70
+
+
+def cmos(idx, val=None):
+    f = os.open("/dev/port", os.O_RDWR)
+    try:
+        os.lseek(f, 0x70, 0)
+        os.write(f, bytes([idx]))
+        os.lseek(f, 0x71, 0)
+        if val is None:
+            return os.read(f, 1)[0]
+        os.write(f, bytes([val]))
+    finally:
+        os.close(f)
+
+
+def boot_stage():
+    """the last breadcrumb of the Phorepoc boot, then cleared (0 / 0xff = none)"""
+    try:
+        code, check = cmos(CMOS), cmos(CMOS + 1)
+        cmos(CMOS, 0)
+        cmos(CMOS + 1, 0xFF)
+    except OSError:
+        return "-"
+    try:
+        crash = cmos(CMOS + 2) == 0xEE
+        cmos(CMOS + 2, 0)
+    except OSError:
+        crash = False
+    if code == 0 or (code ^ check) != 0xFF:
+        return "none" + (",crash" if crash else "")
+    return "%s(0x%02x)%s" % (STAGES.get(code, "unknown"), code, ",crash" if crash else "")
+
+
 def last_boot():
     try:
         return open(os.path.join(STATE, "collected.boot")).read().strip()
@@ -102,6 +147,7 @@ def main():
     dev = partition()
     log = read_log(dev) if dev else None
     kind, fault = classify(log, attempted)
+    stage = boot_stage()
     if kind is None:
         print("phorepoc-collect: no new Phorepoc boot")
         return
@@ -114,7 +160,8 @@ def main():
         lines = log["text"].decode("latin-1").splitlines()[-20:]
         open(os.path.join(STATE, "collected.boot"), "w").write(log["boot"])
     boot = log["boot"] if log and kind != "no-log" else ""
-    head = "[rig] report kind=%s boot=%s bytes=%d log=%s" % (kind, boot or "-", log["bytes"] if log and boot else 0, path)
+    head = "[rig] report kind=%s boot=%s bytes=%d log=%s stage=%s" % (kind, boot or "-", log["bytes"] if log and boot else 0,
+                                                                   path, stage)
     report = [head] + (["[rig] fault " + fault] if fault else []) + ["[rig] | " + l for l in lines] + ["[rig] report end"]
     open(path + ".report", "w").write("\n".join(report) + "\n")
     try:
